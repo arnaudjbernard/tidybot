@@ -1,0 +1,224 @@
+14:40:52: Creating resource group General
+14:40:52: Creating resource group Internal
+14:40:52: Creating resource group Autodetect
+14:40:52: SceneManagerFactory for type 'DefaultSceneManager' registered.
+14:40:52: Registering ResourceManager for type Material
+14:40:52: Registering ResourceManager for type Mesh
+14:40:52: Registering ResourceManager for type Skeleton
+14:40:52: MovableObjectFactory for type 'ParticleSystem' registered.
+14:40:52: OverlayElementFactory for type Panel registered.
+14:40:52: OverlayElementFactory for type BorderPanel registered.
+14:40:52: OverlayElementFactory for type TextArea registered.
+14:40:52: Registering ResourceManager for type Font
+14:40:52: ArchiveFactory for archive type FileSystem registered.
+14:40:52: ArchiveFactory for archive type Zip registered.
+14:40:52: DDS codec registering
+14:40:52: FreeImage version: 3.10.0
+14:40:52: This program uses FreeImage, a free, open source image library supporting all common bitmap formats. See http://freeimage.sourceforge.net for details
+14:40:52: Supported formats: bmp,ico,jpg,jif,jpeg,jpe,jng,koa,iff,lbm,mng,pbm,pbm,pcd,pcx,pgm,pgm,png,ppm,ppm,ras,tga,targa,tif,tiff,wap,wbmp,wbm,psd,cut,xbm,xpm,gif,hdr,g3,sgi,exr,j2k,j2c,jp2
+14:40:52: Registering ResourceManager for type HighLevelGpuProgram
+14:40:52: Registering ResourceManager for type Compositor
+14:40:52: MovableObjectFactory for type 'Entity' registered.
+14:40:52: MovableObjectFactory for type 'Light' registered.
+14:40:52: MovableObjectFactory for type 'BillboardSet' registered.
+14:40:52: MovableObjectFactory for type 'ManualObject' registered.
+14:40:52: MovableObjectFactory for type 'BillboardChain' registered.
+14:40:52: MovableObjectFactory for type 'RibbonTrail' registered.
+14:40:52: OGRE EXCEPTION(6:FileNotFoundException): 'plugins.cfg' file not found! in ConfigFile::load at /home/arno/playerstagegazebo/ogre/OgreMain/src/OgreConfigFile.cpp (line 83)
+14:40:52: plugins.cfg not found, automatic plugin loading disabled.
+14:40:52: *-*-* OGRE Initialising
+14:40:52: *-*-* Version 1.7.0 (Cthugha)
+14:40:52: Loading library /usr/local/lib/OGRE/RenderSystem_GL.so
+14:40:52: Installing plugin: GL RenderSystem
+14:40:52: OpenGL Rendering Subsystem created.
+14:40:52: Plugin successfully installed
+14:40:52: Loading library /usr/local/lib/OGRE/Plugin_ParticleFX.so
+14:40:52: Installing plugin: ParticleFX
+14:40:52: Particle Emitter Type 'Point' registered
+14:40:52: Particle Emitter Type 'Box' registered
+14:40:52: Particle Emitter Type 'Ellipsoid' registered
+14:40:52: Particle Emitter Type 'Cylinder' registered
+14:40:52: Particle Emitter Type 'Ring' registered
+14:40:52: Particle Emitter Type 'HollowEllipsoid' registered
+14:40:52: Particle Affector Type 'LinearForce' registered
+14:40:52: Particle Affector Type 'ColourFader' registered
+14:40:52: Particle Affector Type 'ColourFader2' registered
+14:40:52: Particle Affector Type 'ColourImage' registered
+14:40:52: Particle Affector Type 'ColourInterpolator' registered
+14:40:52: Particle Affector Type 'Scaler' registered
+14:40:52: Particle Affector Type 'Rotator' registered
+14:40:52: Particle Affector Type 'DirectionRandomiser' registered
+14:40:52: Particle Affector Type 'DeflectorPlane' registered
+14:40:52: Plugin successfully installed
+14:40:52: Loading library /usr/local/lib/OGRE/Plugin_BSPSceneManager.so
+14:40:52: Installing plugin: BSP Scene Manager
+14:40:52: Plugin successfully installed
+14:40:52: Loading library /usr/local/lib/OGRE/Plugin_OctreeSceneManager.so
+14:40:52: Installing plugin: Octree & Terrain Scene Manager
+14:40:52: Plugin successfully installed
+14:40:52: Added resource location '/usr/local/share/gazebo/Media' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/fonts' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/materials/programs' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/materials/scripts' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/materials/textures' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/models' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/sets' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/maps' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/fonts' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/materials/programs' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/materials/scripts' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/materials/textures' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/models' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/sets' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/usr/local/share/gazebo/Media/maps' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media/fonts' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media/materials/programs' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media/materials/scripts' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media/materials/textures' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media/models' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media/sets' of type 'FileSystem' to resource group 'General'
+14:40:52: Added resource location '/home/arno/playerstagegazebo/tidybot/gazebo/Media/maps' of type 'FileSystem' to resource group 'General'
+14:40:52: CPU Identifier & Features
+14:40:52: -------------------------
+14:40:52:  *   CPU ID: GenuineIntel: Intel(R) Core(TM)2 CPU         T5500  @ 1.66GHz
+14:40:52:  *      SSE: yes
+14:40:52:  *     SSE2: yes
+14:40:52:  *     SSE3: yes
+14:40:52:  *      MMX: yes
+14:40:52:  *   MMXEXT: yes
+14:40:52:  *    3DNOW: no
+14:40:52:  * 3DNOWEXT: no
+14:40:52:  *     CMOV: yes
+14:40:52:  *      TSC: yes
+14:40:52:  *      FPU: yes
+14:40:52:  *      PRO: yes
+14:40:52:  *       HT: no
+14:40:52: -------------------------
+14:40:52: ******************************
+*** Starting GLX Subsystem ***
+******************************
+14:40:52: GLRenderSystem::_createRenderWindow "OgreWindow(0)", 742x525 windowed  miscParams: FSAA=2 parentWindowHandle=90177539 
+14:40:52: GLXWindow::create used FBConfigID = 90
+14:40:52: GL_VERSION = 1.5 Mesa 7.6
+14:40:52: GL_VENDOR = DRI R300 Project
+14:40:52: GL_RENDERER = Mesa DRI R300 (RV530 71C5) 20090101 x86/MMX/SSE2 TCL
+14:40:52: GL_EXTENSIONS = GL_ARB_depth_texture GL_ARB_draw_buffers GL_ARB_fragment_program GL_ARB_imaging GL_ARB_multisample GL_ARB_multitexture GL_ARB_occlusion_query GL_ARB_point_parameters GL_ARB_shadow GL_ARB_shadow_ambient GL_ARB_texture_border_clamp GL_ARB_texture_compression GL_ARB_texture_cube_map GL_ARB_texture_env_add GL_ARB_texture_env_combine GL_ARB_texture_env_crossbar GL_ARB_texture_env_dot3 GL_MESAX_texture_float GL_ARB_texture_mirrored_repeat GL_ARB_texture_rectangle GL_ARB_transpose_matrix GL_ARB_vertex_array_bgra GL_ARB_vertex_buffer_object GL_ARB_vertex_program GL_ARB_window_pos GL_EXT_abgr GL_EXT_bgra GL_EXT_blend_color GL_EXT_blend_equation_separate GL_EXT_blend_func_separate GL_EXT_blend_logic_op GL_EXT_blend_minmax GL_EXT_blend_subtract GL_EXT_compiled_vertex_array GL_EXT_convolution GL_EXT_copy_texture GL_EXT_draw_range_elements GL_EXT_fog_coord GL_EXT_gpu_program_parameters GL_EXT_histogram GL_EXT_multi_draw_arrays GL_EXT_packed_depth_stencil GL_EXT_packed_pixels GL_EXT_point_parameters GL_EXT_polygon_offset GL_EXT_rescale_normal GL_EXT_secondary_color GL_EXT_separate_specular_color GL_EXT_shadow_funcs GL_EXT_stencil_two_side GL_EXT_stencil_wrap GL_EXT_subtexture GL_EXT_texture GL_EXT_texture3D GL_EXT_texture_edge_clamp GL_EXT_texture_env_add GL_EXT_texture_env_combine GL_EXT_texture_env_dot3 GL_EXT_texture_filter_anisotropic GL_EXT_texture_lod_bias GL_EXT_texture_mirror_clamp GL_EXT_texture_object GL_EXT_texture_rectangle GL_EXT_texture_sRGB GL_EXT_vertex_array GL_EXT_vertex_array_bgra GL_APPLE_packed_pixels GL_ATI_blend_equation_separate GL_ATI_texture_env_combine3 GL_ATI_texture_mirror_once GL_ATI_separate_stencil GL_IBM_multimode_draw_arrays GL_IBM_rasterpos_clip GL_IBM_texture_mirrored_repeat GL_INGR_blend_func_separate GL_MESA_pack_invert GL_MESA_ycbcr_texture GL_MESA_window_pos GL_NV_blend_square GL_NV_light_max_exponent GL_NV_texture_rectangle GL_NV_texgen_reflection GL_NV_vertex_program GL_OES_read_format GL_SGI_color_matrix GL_SGI_color_table GL_SGIS_generate_mipmap GL_SGIS_texture_border_clamp GL_SGIS_texture_edge_clamp GL_SGIS_texture_lod GL_SUN_multi_draw_arrays
+14:40:52: Supported GLX extensions: GLX_ARB_get_proc_address GLX_ARB_multisample GLX_EXT_import_context GLX_EXT_visual_info GLX_EXT_visual_rating GLX_MESA_copy_sub_buffer GLX_MESA_swap_control GLX_MESA_swap_frame_usage GLX_OML_swap_method GLX_SGI_make_current_read GLX_SGI_swap_control GLX_SGI_video_sync GLX_SGIS_multisample GLX_SGIX_fbconfig GLX_SGIX_visual_select_group 
+14:40:52: ***************************
+14:40:52: *** GL Renderer Started ***
+14:40:52: ***************************
+14:40:52: Registering ResourceManager for type GpuProgram
+14:40:52: GL: Using framebuffer copy for rendering to textures (worst)
+14:40:52: GL: Warning: RenderTexture size is restricted to size of framebuffer. If you are on Linux, consider using GLX instead of SDL.
+14:40:52: RenderSystem capabilities
+14:40:52: -------------------------
+14:40:52: RenderSystem Name: OpenGL Rendering Subsystem
+14:40:52: GPU Vendor: unknown
+14:40:52: Device Name: Mesa DRI R300 (RV530 71C5) 20090101 x86/MMX/SSE2 TCL
+14:40:52: Driver Version: 1.5.0.0
+14:40:52:  * Fixed function pipeline: yes
+14:40:52:  * Hardware generation of mipmaps: yes
+14:40:52:  * Texture blending: yes
+14:40:52:  * Anisotropic texture filtering: yes
+14:40:52:  * Dot product texture operation: yes
+14:40:52:  * Cube mapping: yes
+14:40:52:  * Hardware stencil buffer: yes
+14:40:52:    - Stencil depth: 8
+14:40:52:    - Two sided stencil support: yes
+14:40:52:    - Wrap stencil values: yes
+14:40:52:  * Hardware vertex / index buffers: yes
+14:40:52:  * Vertex programs: yes
+14:40:52:  * Number of floating-point constants for vertex programs: 1024
+14:40:52:  * Number of integer constants for vertex programs: 0
+14:40:52:  * Number of boolean constants for vertex programs: 0
+14:40:52:  * Fragment programs: yes
+14:40:52:  * Number of floating-point constants for fragment programs: 1024
+14:40:52:  * Number of integer constants for fragment programs: 0
+14:40:52:  * Number of boolean constants for fragment programs: 0
+14:40:52:  * Geometry programs: no
+14:40:52:  * Number of floating-point constants for geometry programs: 0
+14:40:52:  * Number of integer constants for geometry programs: 0
+14:40:52:  * Number of boolean constants for geometry programs: 0
+14:40:52:  * Supported Shader Profiles: arbfp1 arbvp1
+14:40:52:  * Texture Compression: yes
+14:40:52:    - DXT: no
+14:40:52:    - VTC: no
+14:40:52:    - PVRTC: no
+14:40:52:  * Scissor Rectangle: yes
+14:40:52:  * Hardware Occlusion Query: yes
+14:40:52:  * User clip planes: yes
+14:40:52:  * VET_UBYTE4 vertex element type: yes
+14:40:52:  * Infinite far plane projection: yes
+14:40:52:  * Hardware render-to-texture: no
+14:40:52:  * Floating point textures: no
+14:40:52:  * Non-power-of-two textures: no
+14:40:52:  * Volume textures: yes
+14:40:52:  * Multiple Render Targets: 1
+14:40:52:    - With different bit depths: no
+14:40:52:  * Point Sprites: no
+14:40:52:  * Extended point parameters: yes
+14:40:52:  * Max Point Size: 60
+14:40:52:  * Vertex texture fetch: no
+14:40:52:  * Number of world matrices: 0
+14:40:52:  * Number of texture units: 8
+14:40:52:  * Stencil buffer depth: 8
+14:40:52:  * Number of vertex blend matrices: 0
+14:40:52:  * Render to Vertex Buffer : no
+14:40:52:  * GL 1.5 without VBO workaround: no
+14:40:52:  * Frame Buffer objects: no
+14:40:52:  * Frame Buffer objects (ARB extension): no
+14:40:52:  * Frame Buffer objects (ATI extension): no
+14:40:52:  * PBuffer support: no
+14:40:52:  * GL 1.5 without HW-occlusion workaround: no
+14:40:52: Registering ResourceManager for type Texture
+14:40:52: DefaultWorkQueue('Root') initialising on thread 0x8dad550.
+14:40:52: DefaultWorkQueue('Root')::WorkerFunc - thread 0x91bcf20 starting.
+14:40:52: DefaultWorkQueue('Root')::WorkerFunc - thread 0x952aa08 starting.
+14:40:52: Particle Renderer Type 'billboard' registered
+14:40:52: SceneManagerFactory for type 'BspSceneManager' registered.
+14:40:52: Registering ResourceManager for type BspLevel
+14:40:52: SceneManagerFactory for type 'OctreeSceneManager' registered.
+14:40:52: SceneManagerFactory for type 'TerrainSceneManager' registered.
+14:40:52: TerrainSceneManager: Registered a new PageSource for type Heightmap
+14:40:52: Parsing scripts for resource group Autodetect
+14:40:52: Finished parsing scripts for resource group Autodetect
+14:40:52: Parsing scripts for resource group General
+14:40:52: Parsing script Gazebo.material
+14:40:52: Compiler error: unknown error in Gazebo.material(58): token "lightning" is not recognized
+14:40:52: Compiler error: invalid parameters in Gazebo.material(59)
+14:40:52: Compiler error: invalid parameters in Gazebo.material(394): depth_write third argument must be "true", "false", "yes", "no", "on", or "off"
+14:40:52: Compiler error: invalid parameters in Gazebo.material(411): depth_write third argument must be "true", "false", "yes", "no", "on", or "off"
+14:40:52: Compiler error: number expected in Gazebo.material(1128): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1143): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1158): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1174): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1189): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1204): specular expects at least 4 arguments
+14:40:52: Parsing script Gazebo.material
+14:40:52: Compiler error: unknown error in Gazebo.material(58): token "lightning" is not recognized
+14:40:52: Compiler error: invalid parameters in Gazebo.material(59)
+14:40:52: Compiler error: invalid parameters in Gazebo.material(394): depth_write third argument must be "true", "false", "yes", "no", "on", or "off"
+14:40:52: Compiler error: invalid parameters in Gazebo.material(411): depth_write third argument must be "true", "false", "yes", "no", "on", or "off"
+14:40:52: Compiler error: number expected in Gazebo.material(1128): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1143): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1158): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1174): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1189): specular expects at least 4 arguments
+14:40:52: Compiler error: number expected in Gazebo.material(1204): specular expects at least 4 arguments
+14:40:52: Parsing script Gazebo.material
+14:40:52: Parsing script Gazebo.fontdef
+14:40:52: Parsing script sample.fontdef
+14:40:52: Bad attribute line: glyph	 	0.152344	0.125	0.160156	0.1875 in font Ogre
+14:40:52: Parsing script Gazebo.fontdef
+14:40:52: Parsing script sample.fontdef
+14:40:52: Bad attribute line: glyph	 	0.152344	0.125	0.160156	0.1875 in font Ogre
+14:40:52: Finished parsing scripts for resource group General
+14:40:52: Parsing scripts for resource group Internal
+14:40:52: Finished parsing scripts for resource group Internal
+14:40:52: Texture: lightwood.png: Loading 1 faces(PF_R8G8B8,256x256x1) with 5 hardware generated mipmaps from Image. Internal format is PF_X8R8G8B8,256x256x1.
+14:40:52: Texture: paintedWall.jpg: Loading 1 faces(PF_R8G8B8,512x512x1) with 5 hardware generated mipmaps from Image. Internal format is PF_X8R8G8B8,512x512x1.
+14:40:52: Texture: cocacola.jpg: Loading 1 faces(PF_R8G8B8,398x244x1) with 5 hardware generated mipmaps from Image. Internal format is PF_X8R8G8B8,512x256x1.
+14:40:52: Texture: sprite.jpg: Loading 1 faces(PF_R8G8B8,398x244x1) with 5 hardware generated mipmaps from Image. Internal format is PF_X8R8G8B8,512x256x1.
+14:40:52: Texture: spot_shadow_fade.png: Loading 1 faces(PF_R8G8B8,128x128x1) with 5 hardware generated mipmaps from Image. Internal format is PF_X8R8G8B8,128x128x1.
