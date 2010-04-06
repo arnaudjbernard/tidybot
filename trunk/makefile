@@ -1,5 +1,5 @@
-# Makefile for Hand_Gesture
-#g++ -o Hand_Gesture Hand_Gesture.cpp `pkg-config opencv --cflags --libs`
+# Makefile for Tidybot
+#g++ -o main main.cpp Vect.cpp `pkg-config opencv playerc++ --cflags --libs`
 
 .PHONY: clean mrproper
 .SUFFIXES: .o .cpp
