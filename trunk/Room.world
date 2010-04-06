@@ -109,6 +109,45 @@
 		</body:map>
 	</model:physical>
 
+
+	<!-- Small barrels for manipulation testing 
+	http://www.google.fr/url?sa=t&source=web&ct=res&cd=2&ved=0CBEQFjAB&url=http%3A%2F%2Frobolab.unex.es%2Fpeople%2Flmanso%2Ffiles%2Fgazebo%2FgazeboTextures.pdf&rct=j&q=gazebo+texture&ei=dXG7S6uXIoa48wT0gY3kBw&usg=AFQjCNFY7sa0R8S5eg2tS5QsjWtR_MYTGg&sig2=h7-rQMcJFBy0LiIa4bFr-w
+	place this_folder_address/gazebo in <gazeboPath>this/folder/gazebo</gazeboPath> in ~/.gazeborc
+	-->
+	<!-- Coca cola can -->
+	<model:physical name="cokeCan1">
+		<xyz>2 0 0.40</xyz>
+		<rpy>0 0 0</rpy>
+		<body:cylinder name="cokeCan1_body">
+			<geom:cylinder name="cokeCan1_geom">
+			<size>0.05 0.15</size>
+			<mass>0.01</mass>
+			<visual>
+				<mesh>unit_cylinder</mesh>
+				<scale>0.1 0.1 0.15</scale>
+				<material>Custom/cocacola</material>
+				</visual>
+			</geom:cylinder>
+		</body:cylinder>
+	</model:physical>
+	
+	<!-- Sprite can -->
+	<model:physical name="sprite1">
+		<xyz>2 1 0.40</xyz>
+		<rpy>0 0 0</rpy>
+		<body:cylinder name="sprite1_body">
+			<geom:cylinder name="sprite1_geom">
+			<size>0.05 0.15</size>
+			<mass>0.01</mass>
+			<visual>
+				<mesh>unit_cylinder</mesh>
+				<scale>0.1 0.1 0.15</scale>
+				<material>Custom/sprite</material>
+				</visual>
+			</geom:cylinder>
+		</body:cylinder>
+	</model:physical>
+
 	<!-- Pioneer with attached arm -->
 	<model:physical name="pioneer2at_01">
 		<xyz>0 0 0.25</xyz>
