@@ -6,7 +6,7 @@
 CXX =g++
 CXXFLAGS =-c `pkg-config --cflags opencv playerc++`# -g
 LDFLAGS=`pkg-config --libs opencv playerc++`
-SOURCES=main.cpp Vect.cpp
+SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=main
 
@@ -15,11 +15,15 @@ all: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS) 
 	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@
 
+main.o: main.cpp main.hpp
+
+Vect.o: Vect.cpp Vect.hpp
+
 .cpp.o: $(HEADERS)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 mrproper:
-	rm -f *.o *~
+	rm -f $(EXECUTABLE) *.o *~
 
 clean:
 	rm -f $(EXECUTABLE) *.o
