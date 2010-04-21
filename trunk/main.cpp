@@ -170,10 +170,10 @@ void locateCan(const cv::Mat &imgClean)
 	cv::waitKey(10);
 }
 
-void setBeacon(int x, int y)
-{
-	
-}
+//void setBeacon(int x, int y)
+//{
+//	
+//}
 
 
 void init()
