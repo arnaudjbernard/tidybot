@@ -19,7 +19,7 @@
 	<logData>0</logData>
 
 	<physics:ode>
-		<stepTime>0.005</stepTime>
+		<stepTime>0.002</stepTime>
 		<gravity>0 0 -9.80665</gravity>
 		<cfm>1e-05</cfm>
 		<erp>0.3</erp>
