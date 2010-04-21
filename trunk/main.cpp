@@ -5,12 +5,7 @@
 * Spring 2010
 */
 
-#include <libplayerc++/playerc++.h>
-#include <cv.h>
-#include <cxcore.h>
-#include <cvaux.h>
-#include <highgui.h>
-#include "Vect.hpp"
+
 #include "main.hpp"
 
 int main(int argc, char *argv[])
@@ -37,49 +32,19 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 		
-		int cam_width = cp.GetWidth();
-		int cam_height = cp.GetHeight();
-		int cam_depth = cp.GetDepth();
+		cam_width = cp.GetWidth();
+		cam_height = cp.GetHeight();
+		cam_depth = cp.GetDepth();
 		uint8_t *imgBuffer = new uint8_t[cam_width * cam_height * cam_depth];
-		cv::Mat img(cam_height,cam_width, CV_8UC3, imgBuffer);
-		cv::Mat hsv(cam_height,cam_width, CV_8UC3);
-		cv::Mat maskRed = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
-		cv::Mat maskBlue = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
-		cv::Mat maskS = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
-		cv::Mat maskV = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+		cv::Mat imgClean(cam_height,cam_width, CV_8UC3, imgBuffer);
+		
 		
 		for(;;)
 		{
 			robot.Read(); // 10Hz by default
 			cp.GetImage(imgBuffer);
-			//cv::imshow("img", img);
 			
-			cv::cvtColor(img, hsv, CV_BGR2HSV);
-			cv::vector<cv::Mat> planes;
-			cv::split(hsv, planes);
-			
-			cv::threshold(planes[1], maskS, 122, 255, cv::THRESH_BINARY_INV);//if S<0.3, too grey
-			planes[2].setTo(cv::Scalar(0), maskS);
-			
-			cv::threshold(planes[2], maskV, 60, 255, cv::THRESH_BINARY_INV);//if V<0.25, too dark
-			planes[2].setTo(cv::Scalar(0), maskV);
-			
-			cv::threshold(planes[0], maskRed, 340/2, 255, cv::THRESH_TOZERO_INV);//red H>330 || H<30
-			cv::threshold(maskRed, maskRed, 20/2, 255, cv::THRESH_BINARY);
-			planes[2].setTo(cv::Scalar(0), maskRed);
-			
-			cv::threshold(planes[0], maskBlue, 270/2, 255, cv::THRESH_TOZERO_INV);//blue 210<H<270
-			cv::threshold(maskBlue, maskBlue, 210/2, 255, cv::THRESH_BINARY_INV);
-			
-			//planes[1].setTo(cv::Scalar(255));
-			//planes[2].setTo(cv::Scalar(155));
-			//planes[0].setTo(cv::Scalar(15));
-
-			cv::merge(planes, hsv);
-			cv::cvtColor(hsv, img, CV_HSV2BGR);
-			cv::imshow("hsv", img);
-			//cv::imshow("h", planes[0]);
-			cv::waitKey(10);
+			locateCan(imgClean);
 
 		
 			printf("\nVector			rho		theta\n");
@@ -88,7 +53,6 @@ int main(int argc, char *argv[])
 			//Vect newControl = move(combinedVect, pp);		
 			Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pp), goToBeacon(pp)), pp);
 		
-			pp.SetSpeed(0.0, 0.0);
 			if(!reachedBeacon)
 			{
 				printf("\n***Setting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
@@ -110,9 +74,102 @@ int main(int argc, char *argv[])
 }
 
 
+void locateCan(const cv::Mat &imgClean)
+{
+	cv::Mat hsv(cam_height,cam_width, CV_8UC3);
+	cv::Mat img(cam_height,cam_width, CV_8UC3);
+	cv::Mat maskRed = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+	cv::Mat maskBlue = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+	cv::Mat maskS = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+	cv::Mat maskV = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+	cv::Mat mask = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+	cv::Mat maskCoca = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+	cv::Mat maskSprite = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+	
+	imgClean.copyTo(img);
+	cv::imshow("img", img);
+	
+	cv::cvtColor(img, hsv, CV_BGR2HSV);
+	cv::vector<cv::Mat> planes;
+	cv::split(hsv, planes);
+	
+	mask.setTo(cv::Scalar(0));
+	
+	maskS = planes[1] <= 100;//if S<100, too grey
+	mask.setTo(cv::Scalar(255), maskS);
+	
+	maskS = planes[2] <= 60;//if V<60, too dark
+	mask.setTo(cv::Scalar(255), maskV);
+	
+	cv::inRange(planes[0], cv::Scalar(20/2), cv::Scalar(340/2), maskRed);//red H>330 || H<30
+	
+	cv::inRange(planes[0], cv::Scalar(90/2), cv::Scalar(270/2), maskBlue);//blue/green 90<H<270
+	cv::threshold(maskBlue, maskBlue, 120, 255, cv::THRESH_BINARY_INV);
+	
+	mask.copyTo(maskCoca);
+	mask.copyTo(maskSprite);
+	maskCoca.setTo(cv::Scalar(255), maskRed);
+	maskSprite.setTo(cv::Scalar(255), maskBlue);
+	
+	cv::erode( maskCoca, maskCoca,cv::Mat::ones( 5,5,CV_8UC1 ) );
+	cv::erode( maskSprite, maskSprite,cv::Mat::ones( 5,5,CV_8UC1 ) );
+	//cv::dilate(mask, mask, cv::Mat::ones( 5,5,CV_8UC1 ));
+	//cv::imshow("mask", mask);
+	//planes[2].setTo(cv::Scalar(0), mask);
+	//cv::merge(planes, hsv);
+	//cv::cvtColor(hsv, img, CV_HSV2BGR);
+	//cv::imshow("hsv", img);
+	
+	cv::threshold(maskCoca, maskCoca, 120, 255, cv::THRESH_BINARY_INV);
+	cv::threshold(maskSprite, maskSprite, 120, 255, cv::THRESH_BINARY_INV);
+	cv::vector<cv::vector<cv::Point> > contoursCoca;
+	cv::findContours(maskCoca, contoursCoca, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	cv::vector<cv::vector<cv::Point> > contoursSprite;
+	cv::findContours(maskSprite, contoursSprite, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
+	imgClean.copyTo(img);
+	cv::drawContours(img, contoursCoca, -1, cv::Scalar(0,55,255), 4);
+	cv::drawContours(img, contoursSprite, -1, cv::Scalar(255,155,0), 4);
+	cv::imshow("contours", img);
+	
+	cv::vector<cv::Point> bestCont;
+	double bestArea = -1;
+	bool bestCoca = true;
+	for(int i = 0; i < contoursCoca.size(); i++)
+	{
+		double area = std::abs(cv::contourArea(cv::Mat(contoursCoca[i])));
+		if(area > bestArea)
+		{
+			bestCont = contoursCoca[i];
+			bestArea = area;
+		}
+	}
+	for(int i = 0; i < contoursSprite.size(); i++)
+	{
+		double area = std::abs(cv::contourArea(cv::Mat(contoursSprite[i])));
+		if(area > bestArea)
+		{
+			bestCont = contoursSprite[i];
+			bestArea = area;
+			bestCoca = false;
+		}
+	}
+	
+	//cv::moments(contours[i]);
+	imgClean.copyTo(img);
 
+	if(bestArea != -1)
+	{
+		cv::Scalar color = bestCoca ? cv::Scalar(0,0,255) : cv::Scalar(255,55,0);
+		cv::RotatedRect ellipseBox = cv::fitEllipse(cv::Mat(bestCont));
+		cv::ellipse(img, ellipseBox, color, 4, 8);
+	}
 
+	cv::imshow("ellipse", img);
+	
+	cv::waitKey(10);
+
+}
 
 void init()
 {
