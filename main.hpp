@@ -34,6 +34,8 @@ Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV);
 Vect move(Vect combinedVect, Position2dProxy &pp);
 
 void locateCan(const cv::Mat &imgClean);
+//void setBeacon(int x, int y);
+//void deleteBeacon(int x, int y);
 
 // Global variables for convenient programming
 int cam_width = 1;

@@ -166,23 +166,23 @@
 			</include>
 		</model:physical>-->
 		
-		<!-- GPS -->
+		<!-- GPS 
 		<model:physical name="gps_model">
 			<xyz>0.0 0.0 0.0</xyz>
 			<rpy>0 0 0</rpy>
 			<static>false</static>
 			<controller:generic_gps name="gps_controller">
-				<!--rateP
+				<!-rateP
 				utmOffsetEastP
 				utmOffsetNorthP
 				utmOffsetElevationP
 				utmZoneP
 				sigmaOffsetP
-				sigmaRepeatabilityP-->
+				sigmaRepeatabilityP->
 				<sigmaRepeatabilityP>0</sigmaRepeatabilityP>
 				<interface:gps name="gps_iface_0"/>
 			</controller:generic_gps>
-		</model:physical>
+		</model:physical>-->
 
 		<!-- Camera <updatePeriod>0.1</updatePeriod>-->
 		<model:physical name="cam1_model">
