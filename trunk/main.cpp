@@ -168,8 +168,13 @@ void locateCan(const cv::Mat &imgClean)
 	cv::imshow("ellipse", img);
 	
 	cv::waitKey(10);
-
 }
+
+void setBeacon(int x, int y)
+{
+	
+}
+
 
 void init()
 {
@@ -192,7 +197,7 @@ void init()
 	origin[1] = 0;
 	mapSize[0] = 22;
 	mapSize[1] = 22;
-	beaconRange = 3;
+	beaconRange = 1000;
 	std::ifstream file2("origin.txt");
 	if(file2)
 	{
@@ -252,7 +257,6 @@ Vect wander(Position2dProxy &pp)
 	int xpos = floor(pp.GetXPos());
 	int ypos = floor(pp.GetYPos());
 	result.rho = 1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 ];
-printf("**wan\n");
 	result.theta = (1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 + 1]) * PI - pp.GetYaw();
 	printf("**wander		%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
