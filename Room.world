@@ -186,14 +186,14 @@
 
 		<!-- Camera <updatePeriod>0.1</updatePeriod>-->
 		<model:physical name="cam1_model">
-			<xyz>0.0 -0.0 0.5</xyz>
-			<rpy>0 12 0</rpy>
+			<xyz>0.1 0.0 0.4</xyz>
+			<rpy>0 15 0</rpy>
 			<static>false</static>
 			<body:empty name="cam1_body">
 				<sensor:camera name="cam1_sensor">
 					<imageSize>320 240</imageSize>
-					<nearClip>0.2</nearClip>
-					<farClip>100</farClip>
+					<nearClip>0.3</nearClip>
+					<farClip>10</farClip>
 					<saveFrames>0</saveFrames>
 					<saveFramePath>frames</saveFramePath>
 					<controller:generic_camera name="cam1_controller">
