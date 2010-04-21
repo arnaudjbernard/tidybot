@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 		robot.Read();
 		if(!cp.GetImageSize())
 		{
-			printf("Webcam is not working.");
+			printf("Webcam is not working.\n");
 			return 1;
 		}
 		
@@ -42,12 +42,43 @@ int main(int argc, char *argv[])
 		int cam_depth = cp.GetDepth();
 		uint8_t *imgBuffer = new uint8_t[cam_width * cam_height * cam_depth];
 		cv::Mat img(cam_height,cam_width, CV_8UC3, imgBuffer);
+		cv::Mat hsv(cam_height,cam_width, CV_8UC3);
+		cv::Mat maskRed = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+		cv::Mat maskBlue = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+		cv::Mat maskS = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
+		cv::Mat maskV = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
 		
 		for(;;)
 		{
 			robot.Read(); // 10Hz by default
 			cp.GetImage(imgBuffer);
-			cv::imshow("img", img);
+			//cv::imshow("img", img);
+			
+			cv::cvtColor(img, hsv, CV_BGR2HSV);
+			cv::vector<cv::Mat> planes;
+			cv::split(hsv, planes);
+			
+			cv::threshold(planes[1], maskS, 122, 255, cv::THRESH_BINARY_INV);//if S<0.3, too grey
+			planes[2].setTo(cv::Scalar(0), maskS);
+			
+			cv::threshold(planes[2], maskV, 60, 255, cv::THRESH_BINARY_INV);//if V<0.25, too dark
+			planes[2].setTo(cv::Scalar(0), maskV);
+			
+			cv::threshold(planes[0], maskRed, 340/2, 255, cv::THRESH_TOZERO_INV);//red H>330 || H<30
+			cv::threshold(maskRed, maskRed, 20/2, 255, cv::THRESH_BINARY);
+			planes[2].setTo(cv::Scalar(0), maskRed);
+			
+			cv::threshold(planes[0], maskBlue, 270/2, 255, cv::THRESH_TOZERO_INV);//blue 210<H<270
+			cv::threshold(maskBlue, maskBlue, 210/2, 255, cv::THRESH_BINARY_INV);
+			
+			//planes[1].setTo(cv::Scalar(255));
+			//planes[2].setTo(cv::Scalar(155));
+			//planes[0].setTo(cv::Scalar(15));
+
+			cv::merge(planes, hsv);
+			cv::cvtColor(hsv, img, CV_HSV2BGR);
+			cv::imshow("hsv", img);
+			//cv::imshow("h", planes[0]);
 			cv::waitKey(10);
 
 		
@@ -57,10 +88,11 @@ int main(int argc, char *argv[])
 			//Vect newControl = move(combinedVect, pp);		
 			Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pp), goToBeacon(pp)), pp);
 		
+			pp.SetSpeed(0.0, 0.0);
 			if(!reachedBeacon)
 			{
 				printf("\n***Setting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
-				pp.SetSpeed(newControl.rho, newControl.theta);
+				pp.SetSpeed(newControl.rho/3, newControl.theta/2);
 			}
 			else
 			{
