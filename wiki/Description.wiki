@@ -1,0 +1,10 @@
+#summary Project description.
+#labels description
+
+= Description =
+
+   Our goal is to create the Tidybot, a robot designed to help people tidy their houses. The robot should navigate autonomously in the house to detect messy objects and either put them back at their place or throw trash in the garbage.
+
+   In practical, it will consist of an exploratory robot which wanders in a predefined arena, looks for objects on the ground, identifies the objects and stores them into a predefined location. We intend to do the project in simulation using player and gazebo. The pioneer2at robot with arm is planned to be used for simulation.
+
+   The sensors include Sick LMS laser range finder for depth perception, Camera for identifying objects. The skid steer is used for navigation and gripper is used for holding the objects. The Objects are modeled to be small enough to fit in the gripper of the Robotic Arm. The Controller is a Behavior based controller with different behaviors to avoid obstacles, Sense location, Go to Next Location, Identify objects, Grab Object, Store Objects, etc. The Robot identifies the objects using object recognition algorithm i.e. using camera and some classification algorithm. The robot navigates and manipulates using the motion planning algorithms.
