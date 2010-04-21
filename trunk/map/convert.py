@@ -8,9 +8,12 @@
 
 # This file reads Room.wld and generates the Room.png
 
-import Image, ImageDraw
+import Image, ImageDraw, os
 
 def main():
+	savedPath = os.getcwd()
+	if(not os.path.exists("Room.wld")):
+		os.chdir("map")
 	RoomDef = open("Room.wld")
 	size = (22, 22)
 	obstacles = []
@@ -72,6 +75,7 @@ def main():
 #	fi.write('  size [' + str(size[0]) + ' ' + str(size[1]-1.0) + ' 1.00]\n')
 #	fi.write('  pose [' + str((size[0])/2.0) + ' ' + str((size[1]-1.0)/2) + ' 0 0]\n')
 #	fi.close()
+	os.chdir( savedPath )
 
 if __name__ == "__main__":
     main() 
