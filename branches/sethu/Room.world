@@ -1,0 +1,225 @@
+<?xml version="1.0"?>
+<gazebo:world
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+	xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:window="http://playerstage.sourceforge.net/gazebo/xmlschema/#window"
+	xmlns:param="http://playerstage.sourceforge.net/gazebo/xmlschema/#param"
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:ui="http://playerstage.sourceforge.net/gazebo/xmlschema/#ui"
+	xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics">
+
+	<verbosity>1</verbosity>
+	<logData>0</logData>
+
+	<physics:ode>
+		<stepTime>0.002</stepTime>
+		<gravity>0 0 -9.80665</gravity>
+		<cfm>1e-05</cfm>
+		<erp>0.3</erp>
+		<!-- updateRate: <0 == throttle simTime to match realTime.-->
+		<updateRate>-1</updateRate>
+		<!-- <quickStep>1</quickStep>
+		<quickStepIters>10</quickStepIters>
+		<quickStepW>1.3</quickStepW>-->
+		<contactMaxCorrectingVel>100</contactMaxCorrectingVel>
+		<contactSurfaceLayer>0.001</contactSurfaceLayer>
+		
+	</physics:ode>
+
+	<rendering:ogre>
+		<ambient>1.0 1.0 1.0 1</ambient>
+		<grid>0</grid>
+		<sky>
+			<material>Gazebo/Grey</material>
+		</sky>
+		<fog>
+			<type>none</type>
+			<color>1 1 1 1</color>
+			<linearStart>0</linearStart>
+			<linearEnd>0</linearEnd>
+			<density>0</density>
+		</fog>
+		<shadowTechnique>stencilAdditive</shadowTechnique>
+		<shadowTextureSize>512</shadowTextureSize>
+		<shadowIndexSize>10000</shadowIndexSize>
+	</rendering:ogre>
+
+	<rendering:gui>
+		<type>fltk</type>
+		<size>1000 700</size>
+		<pos>0 0</pos>
+		<frames>
+			<row height="100%">
+				<camera width="100%">
+					<xyz>0 0 0</xyz>
+					<rpy>0 0 0</rpy>
+				</camera>
+			</row>
+		</frames>
+	</rendering:gui>
+
+	<!-- plan	-->
+	<model:physical name="plane1_model">
+		<xyz>9 9 0</xyz>
+		<rpy>0 -0 0</rpy>
+		<enableGravity>1</enableGravity>
+		<enableFriction>1</enableFriction>
+		<collide>all</collide>
+		<static>1</static>
+
+		<body name="plane1_body">
+			<xyz>0 0 0</xyz>
+			<rpy>0 -0 0</rpy>
+
+			<geom:plane name="plane1_geom">
+				<xyz>0 0 0</xyz>
+				<rpy>0 -0 0</rpy>
+				<normal>0 0 1</normal>
+				<size>22 22</size>
+				<segments>10 10</segments>
+				<uvTile>20 20</uvTile>
+				<material>Gazebo/LightWood</material>
+				<castShadows>0</castShadows>
+				<mass>0.001</mass>
+			</geom:plane>
+		</body>
+	</model:physical>
+
+	<!-- Map-->
+	<model:physical name="map">
+		<static>true</static>
+		<xyz>-2 -2 0</xyz>
+		<rpy>0 -0 0</rpy>
+		<body:map name="map_body">
+			<geom:map name="map_geom">
+				<image>Room.png</image>
+				<threshold>200</threshold>
+				<granularity>1</granularity>
+				<negative>false</negative>
+				<scale>1</scale>
+		<material>Gazebo/PaintedWall</material>
+			</geom:map>
+		</body:map>
+	</model:physical>
+
+
+	<!-- Small barrels for manipulation testing 
+	http://www.google.fr/url?sa=t&source=web&ct=res&cd=2&ved=0CBEQFjAB&url=http%3A%2F%2Frobolab.unex.es%2Fpeople%2Flmanso%2Ffiles%2Fgazebo%2FgazeboTextures.pdf&rct=j&q=gazebo+texture&ei=dXG7S6uXIoa48wT0gY3kBw&usg=AFQjCNFY7sa0R8S5eg2tS5QsjWtR_MYTGg&sig2=h7-rQMcJFBy0LiIa4bFr-w
+	place this_folder_address/gazebo in <gazeboPath>this/folder/gazebo</gazeboPath> in ~/.gazeborc
+	-->
+	<!-- Coca cola can -->
+	<model:physical name="cokeCan1">
+		<xyz>2 0 0.40</xyz>
+		<rpy>0 0 0</rpy>
+		<body:cylinder name="cokeCan1_body">
+			<geom:cylinder name="cokeCan1_geom">
+			<size>0.05 0.15</size>
+			<mass>0.01</mass>
+			<visual>
+				<mesh>unit_cylinder</mesh>
+				<scale>0.1 0.1 0.15</scale>
+				<material>Custom/cocacola</material>
+				</visual>
+			</geom:cylinder>
+		</body:cylinder>
+	</model:physical>
+	
+	<!-- Sprite can -->
+	<model:physical name="sprite1">
+		<xyz>2 1 0.40</xyz>
+		<rpy>0 0 0</rpy>
+		<body:cylinder name="sprite1_body">
+			<geom:cylinder name="sprite1_geom">
+			<size>0.05 0.15</size>
+			<mass>0.01</mass>
+			<visual>
+				<mesh>unit_cylinder</mesh>
+				<scale>0.1 0.1 0.15</scale>
+				<material>Custom/sprite</material>
+				</visual>
+			</geom:cylinder>
+		</body:cylinder>
+	</model:physical>
+
+	<!-- Pioneer with attached arm -->
+	<model:physical name="pioneer2at_01">
+		<xyz>0 0 0.25</xyz>
+		<rpy>0.0 0.0 0.0</rpy>
+		
+		<!-- Pioneer 5-dof Arm 
+		<model:physical name="pioneerarm_01">
+			<xyz> -0.150	0.000	0.060</xyz>
+			<rpy>		0.0		0.0	180.0</rpy>
+			<attach>
+				<parentBody>chassis_body</parentBody>
+				<myBody>base_body</myBody>
+			</attach>
+			<include embedded="true">
+				<xi:include href="models/pioneerarm.model" />
+			</include>
+		</model:physical>-->
+		
+		<!-- GPS 
+		<model:physical name="gps_model">
+			<xyz>0.0 0.0 0.0</xyz>
+			<rpy>0 0 0</rpy>
+			<static>false</static>
+			<controller:generic_gps name="gps_controller">
+				<!-rateP
+				utmOffsetEastP
+				utmOffsetNorthP
+				utmOffsetElevationP
+				utmZoneP
+				sigmaOffsetP
+				sigmaRepeatabilityP->
+				<sigmaRepeatabilityP>0</sigmaRepeatabilityP>
+				<interface:gps name="gps_iface_0"/>
+			</controller:generic_gps>
+		</model:physical>-->
+
+		<!-- Camera <updatePeriod>0.1</updatePeriod>-->
+		<model:physical name="cam1_model">
+			<xyz>0.1 0.0 0.4</xyz>
+			<rpy>0 15 0</rpy>
+			<static>false</static>
+			<body:empty name="cam1_body">
+				<sensor:camera name="cam1_sensor">
+					<imageSize>320 240</imageSize>
+					<nearClip>0.3</nearClip>
+					<farClip>10</farClip>
+					<saveFrames>0</saveFrames>
+					<saveFramePath>frames</saveFramePath>
+					<controller:generic_camera name="cam1_controller">
+						<interface:camera name="camera_iface_0"/>
+					</controller:generic_camera>
+				</sensor:camera>
+			</body:empty>
+		</model:physical>
+
+
+		<model:physical name="laser">
+			<xyz>0 0 0.16</xyz>
+
+			<attach>
+				<parentBody>chassis_body</parentBody>
+				<myBody>laser_body</myBody>
+			</attach>
+
+			<include embedded="true">
+				<xi:include href="models/sicklms200.model" />
+			</include>
+		</model:physical>
+
+		<include embedded="true">
+			<xi:include href="models/pioneer2at.model" />
+		</include>
+	</model:physical>
+
+</gazebo:world>

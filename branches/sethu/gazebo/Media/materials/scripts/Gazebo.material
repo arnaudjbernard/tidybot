@@ -1,0 +1,29 @@
+material Custom/sprite
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture sprite.jpg
+			}
+		}
+	}
+}
+
+
+material Custom/cocacola
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture cocacola.jpg
+			}
+		}
+	}
+}
+
