@@ -116,6 +116,12 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pp)
 Vect grabCan(LaserProxy &sp)
 {
 	player_pose2d position = locateCan(sp);
+	if(position.pa < 0)
+	{
+		if(VERBOSITY & 2)printf("Cannot find the can with sonar, restart looking for it.\n");
+		mode = 1;
+		return Vect(0,0);
+	}
 	//Sethu's grabbing code (position)
 	return Vect(0,0);
 }
@@ -243,19 +249,28 @@ player_pose2d locateCan(const cv::Mat &imgClean)
 player_pose2d locateCan(LaserProxy &sp)
 {
 	player_pose2d result;
-	//TODO
-	/*for (unsigned int i=0; i < lp.GetCount(); i+=20)
+	result.pa = -1;
+	//TODO correct the bug
+	double min = sp.GetMaxRange() ;
+	unsigned int minI = sp.GetCount() + 1;
+	for (unsigned int i = 0; i < sp.GetCount(); i+=5)
 	{
-		if(lp.GetRange(i) < lp.GetMaxRange())
+		//printf("%d:%f	",i, sp.GetRange(i));
+		if(sp.GetRange(i) < min)
 		{
-			Vect temp;
-			double angleRad = lp.GetMinAngle() + lp.GetScanRes()*i;
-			temp.rho = (1/(lp.GetRange(i)-0.09) - 1/(10.0-0.1))/10.0;
-			temp.theta = angleRad + PI;
-			result = result + temp;
+			min = sp.GetRange(i);
+			minI = i;
 		}
-	}*/
-
+	}
+	if(min < sp.GetMaxRange())
+	{
+		double angleRad = -45*PI/180 + sp.GetScanRes()*minI;//sp.GetMinAngle() doesn't work?
+		//printf("can ang	%lf	%lf %lf %lf %lf %d\n",angleRad, min, sp.GetMinAngle(), sp.GetScanRes(),sp.GetMaxRange(),minI);
+		result.pa = 1;
+		result.px = std::sin(angleRad)*min;
+		result.py = std::cos(angleRad)*min;
+	}
+	if(VERBOSITY & 8)printf("Sonar sees can at	%lf	%lf\n",result.px, result.py);
 	return result;
 }
 
@@ -309,7 +324,7 @@ void init()
 		}
 	}
 
-	//PID
+	//PIDlp.GetRange(i)
 	error = 0;
 	integral = 0;
 }
@@ -347,15 +362,13 @@ Vect wander(Position2dProxy &pp)
 }
 
 Vect goToBeacon(player_pose2d position)
-{	
-	printf("%lf	%lf\n",position.px,position.py);
+{
 	Vect result(1.0, 0);
 	
 	if(position.pa > 0)
 	{
 		result.rho = 1.0;
 		result.theta = -position.px * PI/2;
-		printf("%lf	%lf\n",result.rho,result.theta);
 	}
 
 	if(VERBOSITY & 8)printf("goToBeacon	%lf	%lf\n",result.rho, rtod(result.theta));

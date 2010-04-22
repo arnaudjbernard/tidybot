@@ -199,8 +199,8 @@
 						<rangeCount>101</rangeCount>
 						<origin>0.0 0.0 0</origin>
 
-						<displayRays>false</displayRays>
-						<!--<displayRays>fan</displayRays>-->
+						<!--<displayRays>false</displayRays>-->
+						<displayRays>fan</displayRays>
 
 						<minAngle>-45</minAngle>
 						<maxAngle>45</maxAngle>
