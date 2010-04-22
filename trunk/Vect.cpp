@@ -1,6 +1,6 @@
 /*
 * ECE 8853 - Autonomous Control of Robotic Systems
-* Project - Tidyb
+* Project - Tidybot
 * Sethu Madhav Bhattiprolu && Arnaud BERNARD
 * Spring 2010
 */
