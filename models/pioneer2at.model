@@ -48,7 +48,7 @@
     </visual>
 
     <visual>
-      <xyz>0.20 0.0 0.066</xyz>
+      <xyz>0.20 0.0 0.036</xyz>
       <rpy>0 0 0</rpy>
       <size>0.12 0.29 0.034</size>
       <mesh>Pioneer2at/sonarbank.mesh</mesh>
@@ -56,7 +56,7 @@
     </visual>
 
     <visual>
-      <xyz>-0.188 0.0 0.066</xyz>
+      <xyz>-0.188 0.0 0.036</xyz>
       <rpy>0 0 180</rpy>
       <size>0.12 0.29 0.034</size>
       <mesh>Pioneer2at/sonarbank.mesh</mesh>
