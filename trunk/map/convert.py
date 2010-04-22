@@ -12,7 +12,7 @@ import Image, ImageDraw, os
 
 def main():
 	savedPath = os.getcwd()
-	if(not os.path.exists("Room.wld")):
+	if(not os.path.exists("Room.wld")):#we are running make map from ../ directory
 		os.chdir("map")
 	RoomDef = open("Room.wld")
 	size = (22, 22)

@@ -183,17 +183,51 @@
 				<interface:gps name="gps_iface_0"/>
 			</controller:generic_gps>
 		</model:physical>-->
+		
+		<!-- Sonar : Sonar controller is not implemented yet, use short range laser instead
+		<model:physical name="sonar_model">
+			<controller:generic_sonar name="sonar_controller">
+				<interface:sonar name="sonar_iface_0"/>
+			</controller:generic_sonar>
+		</model:physical>-->
+		<model:physical name="sonar_model">
+			<body:box name="sonar_body">
+				<xyz>0.15 0.06 -0.1</xyz>
+				<rpy>0.0 0.0 0.0</rpy>
+					<sensor:ray name="sonar_0">
+						<rayCount>90</rayCount>
+						<rangeCount>101</rangeCount>
+						<origin>0.0 0.0 0</origin>
+
+						<displayRays>false</displayRays>
+						<!--<displayRays>fan</displayRays>-->
+
+						<minAngle>-45</minAngle>
+						<maxAngle>45</maxAngle>
+
+						<minRange>0.1</minRange>
+						<maxRange>0.6</maxRange>
+						<resRange>1</resRange>
+
+						<controller:sicklms200_laser name="sonar_controller_0">
+							<interface:laser name="sonar_iface_0"/>
+							<interface:fiducial name="sonar_iface_0"/>
+						</controller:sicklms200_laser>
+					</sensor:ray>
+			</body:box>
+		</model:physical>
 
 		<!-- Camera <updatePeriod>0.1</updatePeriod>-->
 		<model:physical name="cam1_model">
-			<xyz>0.1 0.0 0.4</xyz>
-			<rpy>0 15 0</rpy>
+			<xyz>-0.05 0.0 0.35</xyz>
+			<rpy>0 21 0</rpy>
 			<static>false</static>
 			<body:empty name="cam1_body">
 				<sensor:camera name="cam1_sensor">
 					<imageSize>320 240</imageSize>
+					<hfov>70</hfov>
 					<nearClip>0.3</nearClip>
-					<farClip>10</farClip>
+					<farClip>0.2</farClip>
 					<saveFrames>0</saveFrames>
 					<saveFramePath>frames</saveFramePath>
 					<controller:generic_camera name="cam1_controller">

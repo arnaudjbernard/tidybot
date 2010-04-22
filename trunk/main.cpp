@@ -1,17 +1,14 @@
 /*
 * ECE 8853 - Autonomous Control of Robotic Systems
-* Project - Tidyb
+* Project - Tidybot
 * Sethu Madhav Bhattiprolu && Arnaud BERNARD
 * Spring 2010
 */
 
-
 #include "main.hpp"
 
 int main(int argc, char *argv[])
-{
-	using namespace PlayerCc;
-	
+{	
 	init();
 	
 	try
@@ -20,49 +17,54 @@ int main(int argc, char *argv[])
 		LaserProxy lp(&robot, 0);
 		Position2dProxy pp(&robot,0);
 		CameraProxy cp(&robot,0);
+		LaserProxy sp(&robot,0);
 	
-		double turnrate = 0.0, speed = 0.0;
 		pp.SetMotorEnable(true);
-		pp.SetSpeed(speed, turnrate);
+		pp.SetSpeed(0, 0);
 	
 		robot.Read();
 		if(!cp.GetImageSize())
 		{
-			printf("Webcam is not working.\n");
+			if(VERBOSITY & 1)printf("Webcam is not working.\n");
 			return 1;
 		}
 		
 		cam_width = cp.GetWidth();
 		cam_height = cp.GetHeight();
 		cam_depth = cp.GetDepth();
-		uint8_t *imgBuffer = new uint8_t[cam_width * cam_height * cam_depth];
-		cv::Mat imgClean(cam_height,cam_width, CV_8UC3, imgBuffer);
-		
-		
+		Vect newControl;
+				
 		for(;;)
 		{
 			robot.Read(); // 10Hz by default
-			cp.GetImage(imgBuffer);
-			
-			locateCan(imgClean);
 
-		
-			printf("\nVector			rho		theta\n");
-			printf("---------------------------------------------------\n");
-			//Vect combinedVect = vectCombine(avoidObstacles(lp), wander(pp), goToBeacon(pp));
-			//Vect newControl = move(combinedVect, pp);		
-			Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pp), goToBeacon(pp)), pp);
-		
-			if(!reachedBeacon)
+			computePosition(lp, pp);
+
+			switch(mode)
 			{
-				printf("\n***Setting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
-				pp.SetSpeed(newControl.rho/3, newControl.theta/2);
+			case 1://wander
+				if(VERBOSITY & 8)printf("Searching for a can.\n");
+				newControl = searchCan(lp, cp, pp);
+				break;
+			case 2://follow path
+				if(VERBOSITY & 8)printf("Going to storage place.\n");
+				newControl = followPath(lp, pp);
+				break;
+			case 3://grab can
+				if(VERBOSITY & 8)printf("Grabbing the can.\n");
+				newControl = grabCan(sp);
+				break;
+			case 4://put down can
+				if(VERBOSITY & 8)printf("Putting down the can.\n");
+				newControl = putDownCan();
+				break;
+			default:
+				if(VERBOSITY & 1)printf("Unknown mode, exiting.\n");
+				return -2;
 			}
-			else
-			{
-				printf("\n***Beacon reached!\n");
-				pp.SetSpeed(0.0, 0.0);
-			}
+			
+			if(VERBOSITY & 4)printf("\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
+			pp.SetSpeed(newControl.rho/3, newControl.theta/2);
 		}
 	}
 	catch (PlayerCc::PlayerError e)
@@ -73,8 +75,58 @@ int main(int argc, char *argv[])
 	return 0; //unreachable
 }
 
+void computePosition(LaserProxy &lp, Position2dProxy &pp)
+{
+	double aX = 0, aY = 0, aYaw = 0;
+	//Sethu's code?
+	pp.SetOdometry(aX, aY, aYaw);
+}
 
-void locateCan(const cv::Mat &imgClean)
+Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
+{
+	uint8_t *imgBuffer = new uint8_t[cam_width * cam_height * cam_depth];
+	cv::Mat imgClean(cam_height,cam_width, CV_8UC3, imgBuffer);
+	
+	cp.GetImage(imgBuffer);
+	player_pose2d position = locateCan(imgClean);
+	
+	if(VERBOSITY & 8)printf("\nVector			rho		theta\n");
+	if(VERBOSITY & 8)printf("---------------------------------------------------\n");
+	
+	Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pp), goToBeacon(position)), pp);
+
+	if(!reachedBeacon)
+	{
+		if(VERBOSITY & 4)printf("\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
+		return Vect(newControl.rho/3, newControl.theta/2);
+	}
+	else
+	{
+		if(VERBOSITY & 4)printf("\nBeacon reached!\n");
+		return Vect(0.0, 0.0);
+	}
+}
+
+Vect followPath(LaserProxy &lp, Position2dProxy &pp)
+{
+	//TODO
+	return Vect(0,0);
+}
+
+Vect grabCan(LaserProxy &sp)
+{
+	player_pose2d position = locateCan(sp);
+	//Sethu's grabbing code (position)
+	return Vect(0,0);
+}
+
+Vect putDownCan()
+{
+	//Sethu's dropping code
+	return Vect(0,0);
+}
+
+player_pose2d locateCan(const cv::Mat &imgClean)
 {
 	cv::Mat hsv(cam_height,cam_width, CV_8UC3);
 	cv::Mat img(cam_height,cam_width, CV_8UC3);
@@ -87,7 +139,7 @@ void locateCan(const cv::Mat &imgClean)
 	cv::Mat maskSprite = cv::Mat::zeros(cam_height,cam_width, CV_8UC1);
 	
 	imgClean.copyTo(img);
-	cv::imshow("img", img);
+	//cv::imshow("img", img);
 	
 	cv::cvtColor(img, hsv, CV_BGR2HSV);
 	cv::vector<cv::Mat> planes;
@@ -130,7 +182,7 @@ void locateCan(const cv::Mat &imgClean)
 	imgClean.copyTo(img);
 	cv::drawContours(img, contoursCoca, -1, cv::Scalar(0,55,255), 4);
 	cv::drawContours(img, contoursSprite, -1, cv::Scalar(255,155,0), 4);
-	cv::imshow("contours", img);
+	//cv::imshow("contours", img);
 	
 	cv::vector<cv::Point> bestCont;
 	double bestArea = -1;
@@ -158,39 +210,70 @@ void locateCan(const cv::Mat &imgClean)
 	//cv::moments(contours[i]);
 	imgClean.copyTo(img);
 
+	player_pose2d canPosition;
+	canPosition.px = -1;
+	canPosition.py = -1;
+	canPosition.pa = -1;
 	if(bestArea != -1)
 	{
 		cv::Scalar color = bestCoca ? cv::Scalar(0,0,255) : cv::Scalar(255,55,0);
 		cv::RotatedRect ellipseBox = cv::fitEllipse(cv::Mat(bestCont));
 		cv::ellipse(img, ellipseBox, color, 4, 8);
+		if(VERBOSITY & 8)printf("Found a %s can.\n",bestCoca ? "Coke" : "Sprite");
+		canPosition.pa = 1;
+		canPosition.py = ellipseBox.center.y/cam_height;
+		canPosition.px = (ellipseBox.center.x - cam_width/2)/(cam_width/2);
+		
+		if(ellipseBox.center.y + ellipseBox.size.height/2 > cam_height - TR_SWITCH_MODE_3)
+		{
+			mode = 3;
+			canType = bestCoca ? 0 : 1;
+			if(VERBOSITY & 2)printf("Reached the %s can, try to grab it.\n",bestCoca ? "Coke" : "Sprite");
+		}
 	}
-
+	
 	cv::imshow("ellipse", img);
 	
 	cv::waitKey(10);
+	
+	return canPosition;
 }
 
-//void setBeacon(int x, int y)
-//{
-//	
-//}
 
+player_pose2d locateCan(LaserProxy &sp)
+{
+	player_pose2d result;
+	//TODO
+	/*for (unsigned int i=0; i < lp.GetCount(); i+=20)
+	{
+		if(lp.GetRange(i) < lp.GetMaxRange())
+		{
+			Vect temp;
+			double angleRad = lp.GetMinAngle() + lp.GetScanRes()*i;
+			temp.rho = (1/(lp.GetRange(i)-0.09) - 1/(10.0-0.1))/10.0;
+			temp.theta = angleRad + PI;
+			result = result + temp;
+		}
+	}*/
+
+	return result;
+}
 
 void init()
 {
 	// Get beacons from text file ./beacons.txt created by python algorithm
-	nbBeacons = 0;
+	/*nbBeacons = 0;
 	std::ifstream file("beacons.txt");
 	if(file)
 	{
-			std::string line;
-			while(std::getline(file, line))
-			{
-				beacons[nbBeacons] = atoi(line.c_str());
-				nbBeacons++;
-			}
+		std::string line;
+		while(std::getline(file, line))
+		{
+			beacons[nbBeacons] = atoi(line.c_str());
+			nbBeacons++;
+		}
 	}
-	nbBeacons /= 2;
+	nbBeacons /= 2;*/
 
 	// get origin from text file ./origin.txt created by python algorithm
 	origin[0] = 0;
@@ -201,17 +284,17 @@ void init()
 	std::ifstream file2("origin.txt");
 	if(file2)
 	{
-				std::string line;
-				std::getline(file2, line);
-				origin[0] = atoi(line.c_str());
-				std::getline(file2, line);
-				origin[1] = atoi(line.c_str());
-				std::getline(file2, line);
-				mapSize[0] = atoi(line.c_str());
-				std::getline(file2, line);
-				mapSize[1] = atoi(line.c_str());
-				std::getline(file2, line);
-				beaconRange = atoi(line.c_str());
+		std::string line;
+		std::getline(file2, line);
+		origin[0] = atoi(line.c_str());
+		std::getline(file2, line);
+		origin[1] = atoi(line.c_str());
+		std::getline(file2, line);
+		mapSize[0] = atoi(line.c_str());
+		std::getline(file2, line);
+		mapSize[1] = atoi(line.c_str());
+		std::getline(file2, line);
+		beaconRange = atoi(line.c_str());
 	}
 	
 	//initialize the random field 
@@ -234,6 +317,7 @@ void init()
 Vect avoidObstacles(LaserProxy &lp)
 {
 	Vect result;
+	//TODO avoid very close cans
 
 	for (unsigned int i=0; i < lp.GetCount(); i+=20)
 	{
@@ -247,7 +331,7 @@ Vect avoidObstacles(LaserProxy &lp)
 		}
 	}
 
-	printf("**avoidObstacles	%lf	%lf\n",result.rho, rtod(result.theta));
+	if(VERBOSITY & 8)printf("avoidObstacles	%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
 
@@ -258,50 +342,45 @@ Vect wander(Position2dProxy &pp)
 	int ypos = floor(pp.GetYPos());
 	result.rho = 1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 ];
 	result.theta = (1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 + 1]) * PI - pp.GetYaw();
-	printf("**wander		%lf	%lf\n",result.rho, rtod(result.theta));
+	if(VERBOSITY & 8)printf("wander		%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
 
-Vect goToBeacon(Position2dProxy &pp)
-{
-	Vect result;
-	reachedBeacon = false;
-	for( int i = 0; i < nbBeacons; i++ )
+Vect goToBeacon(player_pose2d position)
+{	
+	printf("%lf	%lf\n",position.px,position.py);
+	Vect result(1.0, 0);
+	
+	if(position.pa > 0)
 	{
-		double dx = beacons[ i * 2 ] - pp.GetXPos();
-		double dy = beacons[ i * 2 + 1 ] - pp.GetYPos();
-		double dist = sqrt(pow(dx,2)+pow(dy,2));
-		
-		if(dist <= beaconRange) // Take only the closest to avoid Buridan's ass?
-		{
-			Vect temp;
-			temp.rho = 1.0;
-			temp.theta = 2*atan(dy/(dx+sqrt(pow(dx,2)+pow(dy,2)))) - pp.GetYaw();
-			result = result + temp;
-			if(dist < 1.0)
-			{
-				reachedBeacon = true;
-				error = 0; //reset PID
-				integral = 0;
-			}
-		}
+		result.rho = 1.0;
+		result.theta = -position.px * PI/2;
+		printf("%lf	%lf\n",result.rho,result.theta);
 	}
-	printf("**goToBeacon		%lf	%lf\n",result.rho, rtod(result.theta));
+
+	if(VERBOSITY & 8)printf("goToBeacon	%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
 
 Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV)
 {
 	Vect result, straight(1.0, 0.0);
-	result = avoidObstaclesV * 1.0 + wanderV * 0.2 + goToBeaconV * 0.3 + straight * 1.0;
-	printf("**vectCombine		%lf	%lf\n",result.rho, rtod(result.theta));
+	if(goToBeaconV.theta > -0.01 && goToBeaconV.theta < 0.01)
+	{
+		result = avoidObstaclesV * 1.0 + wanderV * 0.2 + straight * 1.0;
+	}
+	else
+	{
+		result = avoidObstaclesV * 0*1.0 + wanderV *0* 0.2 + goToBeaconV * 1.0;
+	if(VERBOSITY & 8)printf("vectCombine	%lf	%lf\n",result.rho, rtod(result.theta));
+	}
+	if(VERBOSITY & 8)printf("vectCombine	%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
 
 Vect move(Vect combinedVect, Position2dProxy &pp)
 {
-
-////PID	
+	////PID
 
 	//we assume delta_t constant between each function call 
 	double alpha = 1.00 - 0.02;
@@ -309,20 +388,20 @@ Vect move(Vect combinedVect, Position2dProxy &pp)
 	double KI = 0.04;
 	double KD = 1.0;
 
-	printf("*PID: %lf	%lf\n",KP * error, KI * integral);
+	if(VERBOSITY & 16)printf("PID: %lf	%lf\n",KP * error, KI * integral);
 	double error_old = error;
 	error = combinedVect.theta - 0; // the vector is in relative coordinates so the actual direction of the robot is theta = 0
 	integral = alpha * integral + error;
 	double derivative = error - error_old;
-	printf("*PID: %lf	%lf	%lf\n",KP * error, KI * integral, KD * derivative);
+	if(VERBOSITY & 16)printf("PID: %lf	%lf	%lf\n",KP * error, KI * integral, KD * derivative);
 	
-	double command = KP * error + KI * integral + KD * derivative;
-
+	//double command = KP * error + KI * integral + KD * derivative;
+	double command = error;
 	
 	Vect result;
 	result.rho = combinedVect.rho;
 	result.theta = command; //turnrate
 	result.rho = cos(result.theta) > 0 ? result.rho * cos(result.theta) : 0;
-	printf("**move			%lf	%lf\n",result.rho, rtod(result.theta));
+	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
