@@ -109,7 +109,7 @@ Spring 2010
 				<threshold>200</threshold>
 				<granularity>1</granularity>
 				<negative>false</negative>
-				<scale>1	</scale>
+				<scale>1</scale>
 		<material>Gazebo/PaintedWall</material>
 			</geom:map>
 		</body:map>
