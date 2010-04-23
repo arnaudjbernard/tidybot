@@ -1,3 +1,4 @@
+
 material Custom/sprite
 {
 	technique
@@ -7,6 +8,36 @@ material Custom/sprite
 			texture_unit
 			{
 				texture sprite.jpg
+			}
+		}
+	}
+}
+
+
+material Custom/RoomL
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture RoomL.png
+			}
+		}
+	}
+}
+
+
+material Custom/Room
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture Room.png
 			}
 		}
 	}
