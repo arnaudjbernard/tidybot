@@ -250,7 +250,6 @@ player_pose2d locateCan(LaserProxy &sp)
 {
 	player_pose2d result;
 	result.pa = -1;
-	//TODO correct the bug
 	double min = sp.GetMaxRange() ;
 	unsigned int minI = sp.GetCount() + 1;
 	for (unsigned int i = 0; i < sp.GetCount(); i++)
