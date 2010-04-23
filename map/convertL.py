@@ -27,12 +27,12 @@ def main():
                 if Line == "" :
                         continue
                 elif Keyword == "MapSize" : # size of the image
-                        size = (int(Tokens[1].strip())*100+200, int(Tokens[2].strip())*100+200)
+                        size = (int(Tokens[1].strip())*10+20, int(Tokens[2].strip())*10+20)
                 elif Keyword == "Obstacle" : # Obstacle (x, y, width, height)
-                        obstacles.append((      100 + int(Tokens[1].strip())*100, \
-                                                                100 + int(Tokens[2].strip())*100, \
-                                                                100 + int(Tokens[1].strip())*100 + int(Tokens[3].strip())*100 - 1, \
-                                                                100 + int(Tokens[2].strip())*100 + int(Tokens[4].strip())*100 - 1))
+                        obstacles.append((      10 + int(Tokens[1].strip())*10, \
+                                                                10 + int(Tokens[2].strip())*10, \
+                                                                10 + int(Tokens[1].strip())*10 + int(Tokens[3].strip())*10 - 1, \
+                                                                10 + int(Tokens[2].strip())*10 + int(Tokens[4].strip())*10 - 1))
 #               elif Keyword == "Beacon" : # Obstacle (x, y, width, height)
 #                       beacons.append(( int(Tokens[1].strip()), int(Tokens[2].strip())))
 #               elif Keyword == "Origin" : # size of the image
@@ -45,7 +45,7 @@ def main():
         
         im = Image.new('L', size, 0)
         draw = ImageDraw.Draw(im)
-        draw.rectangle((100, 100, size[0]-100 - 1, size[1]-100 -1), fill = 255);
+        draw.rectangle((10, 10, size[0]-10 - 1, size[1]-10 -1), fill = 255);
         for obstacle in obstacles:
                 draw.rectangle(obstacle, fill=0)
         Path = "../gazebo/Media/materials/textures/RoomL.png"
@@ -60,7 +60,7 @@ def main():
 #       for beacon in beacons:
 #               draw.point(beacon, fill=222)
 #               fi.write(str(beacon[0])+"\n"+str(beacon[1])+"\n")
-#               fi2.write('zone(name "beacon"size [1.414 1.414 0.00]pose ['+str(beacon[0])+' '+str(beacon[1])+' 0 0])')
+#               fi2.write('zone(name "beacon"size [1.414 1.414 0.0]pose ['+str(beacon[0])+' '+str(beacon[1])+' 0 0])')
 #       fi2.close()
 #       fi.close()
 #       fi = open("origin.txt", "w")
@@ -72,7 +72,7 @@ def main():
 #       fi.write('  pose [' + str(origin[0] + 0.5) + ' ' + str(origin[1] + 0.5) + ' 0 0]\n')
 #       fi.close()
 #       fi = open("size.inc", "w")
-#       fi.write('  size [' + str(size[0]) + ' ' + str(size[1]-1.0) + ' 1.00]\n')
+#       fi.write('  size [' + str(size[0]) + ' ' + str(size[1]-1.0) + ' 1.0]\n')
 #       fi.write('  pose [' + str((size[0])/2.0) + ' ' + str((size[1]-1.0)/2) + ' 0 0]\n')
 #       fi.close()
         os.chdir( savedPath )

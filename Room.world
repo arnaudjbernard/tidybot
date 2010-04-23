@@ -126,11 +126,11 @@ Spring 2010
 		<rpy>0 0 0</rpy>
 		<body:cylinder name="cokeCan1_body">
 			<geom:cylinder name="cokeCan1_geom">
-			<size>0.05 0.15</size>
+			<size>0.04 0.15</size>
 			<mass>0.01</mass>
 			<visual>
 				<mesh>unit_cylinder</mesh>
-				<scale>0.1 0.1 0.15</scale>
+				<scale>0.08 0.08 0.15</scale>
 				<material>Custom/cocacola</material>
 				</visual>
 			</geom:cylinder>
@@ -140,14 +140,14 @@ Spring 2010
 	<!-- Sprite can -->
 	<model:physical name="sprite1">
 		<xyz>2 1 0.40</xyz>
-		<rpy>0 0 0</rpy>
+		<rpy>0 180 0</rpy>
 		<body:cylinder name="sprite1_body">
 			<geom:cylinder name="sprite1_geom">
-			<size>0.05 0.15</size>
+			<size>0.04 0.15</size>
 			<mass>0.01</mass>
 			<visual>
 				<mesh>unit_cylinder</mesh>
-				<scale>0.1 0.1 0.15</scale>
+				<scale>0.08 0.08 0.15</scale>
 				<material>Custom/sprite</material>
 				</visual>
 			</geom:cylinder>
