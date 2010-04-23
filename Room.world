@@ -179,7 +179,7 @@ Spring 2010
 		
 		<!-- Pioneer 5-dof Arm -->
 		<model:physical name="pioneerarm_01">
-			<xyz>0.12 0.000 0.06</xyz>
+			<xyz>0.155 0.000 0.06</xyz>
 			<rpy>0.0 0.0 0.0</rpy>
 
 			<attach>
