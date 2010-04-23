@@ -24,6 +24,7 @@ Vect.o: Vect.cpp Vect.hpp
 
 map:
 	python map/convert.py
+	python map/convertL.py
 
 mrproper: clean
 	find . -name "*~" -exec rm {} \;
