@@ -56,24 +56,42 @@ Spring 2010
 		<shadowTextureSize>512</shadowTextureSize>
 		<shadowIndexSize>10000</shadowIndexSize>
 	</rendering:ogre>
+	<!--Point light -->
+	<!--Without Light The Arm Looks dull(grey) without shining -->
+	<!--Remove This if there are Problems with Object Detection as this may cast Shadows-->
+	<!-- White Point light -->
+	<model:renderable name="point_white">
+		<xyz>0 0 5</xyz>
+		<static>true</static>
+
+		<light>
+			<type>point</type>
+			<diffuseColor>0.4 0.4 0.4</diffuseColor>
+			<specularColor>.1 .1 .1</specularColor>
+			<range>20</range>
+
+			<!-- Constant(0-1) Linear(0-1) Quadratic -->
+			<attenuation>0.5 0.01 0.001</attenuation>
+		</light>
+	</model:renderable>
 
 	<rendering:gui>
 		<type>fltk</type>
 		<size>1000 700</size>
 		<pos>0 0</pos>
 		<frames>
-			<row height="100%">
-				<camera width="100%">
-					<xyz>0 0 0</xyz>
-					<rpy>0 0 0</rpy>
-				</camera>
-			</row>
+		<row height="100%">
+		<camera width="100%">
+		<xyz>0 0 0</xyz>
+		<rpy>0 0 0</rpy>
+		</camera>
+		</row>
 		</frames>
 	</rendering:gui>
 
 	<!-- plan	-->
 	<model:physical name="plane1_model">
-		<xyz>9 9 0</xyz>
+		<xyz>1 1 0</xyz>
 		<rpy>0 -0 0</rpy>
 		<enableGravity>1</enableGravity>
 		<enableFriction>1</enableFriction>
@@ -101,7 +119,7 @@ Spring 2010
 	<!-- Map-->
 	<model:physical name="map">
 		<static>true</static>
-		<xyz>-3 -3 0</xyz>
+		<xyz>-11 -11 0</xyz>
 		<rpy>0 -0 0</rpy>
 		<body:map name="map_body">
 			<geom:map name="map_geom">
@@ -122,7 +140,7 @@ Spring 2010
 	-->
 	<!-- Coca cola can -->
 	<model:physical name="cokeCan1">
-		<xyz>2 0 0.40</xyz>
+		<xyz>-7 -9 0.40</xyz>
 		<rpy>0 0 0</rpy>
 		<body:cylinder name="cokeCan1_body">
 			<geom:cylinder name="cokeCan1_geom">
@@ -139,7 +157,7 @@ Spring 2010
 	
 	<!-- Sprite can -->
 	<model:physical name="sprite1">
-		<xyz>2 1 0.40</xyz>
+		<xyz>-7 -8 0.40</xyz>
 		<rpy>0 180 0</rpy>
 		<body:cylinder name="sprite1_body">
 			<geom:cylinder name="sprite1_geom">
@@ -156,21 +174,23 @@ Spring 2010
 
 	<!-- Pioneer with attached arm -->
 	<model:physical name="pioneer2at_01">
-		<xyz>0 0 0.25</xyz>
+		<xyz>-9 -9 0.25</xyz>
 		<rpy>0.0 0.0 0.0</rpy>
 		
-		<!-- Pioneer 5-dof Arm 
+		<!-- Pioneer 5-dof Arm -->
 		<model:physical name="pioneerarm_01">
-			<xyz> -0.150	0.000	0.060</xyz>
-			<rpy>		0.0		0.0	180.0</rpy>
+			<xyz>0.12 0.000 0.06</xyz>
+			<rpy>0.0 0.0 0.0</rpy>
+
 			<attach>
 				<parentBody>chassis_body</parentBody>
 				<myBody>base_body</myBody>
 			</attach>
-			<include embedded="true">
-				<xi:include href="models/pioneerarm.model" />
-			</include>
-		</model:physical>-->
+
+				<include embedded="true">
+					<xi:include href="models/pioneerarm.model" />
+				</include>
+		</model:physical>
 		
 		<!-- GPS 
 		<model:physical name="gps_model">
@@ -225,7 +245,7 @@ Spring 2010
 
 		<!-- Camera <updatePeriod>0.1</updatePeriod>-->
 		<model:physical name="cam1_model">
-			<xyz>-0.05 0.0 0.35</xyz>
+			<xyz>-0.05 0.0 0.4</xyz>
 			<rpy>0 21 0</rpy>
 			<static>false</static>
 			<body:empty name="cam1_body">
@@ -243,9 +263,27 @@ Spring 2010
 			</body:empty>
 		</model:physical>
 
+		<model:physical name="filler">
+			<xyz>-0.04 0 0.06</xyz>
+			<attach>
+				<parentBody>chassis_body</parentBody>
+				<myBody>filler_body</myBody>
+			</attach>
+			<body:box name="filler_body">
+				<geom:box name="filler_geom">
+					<size>0.12 0.1 0.12</size>
+					<mass>0.05</mass>
+					<visual>
+						<mesh>unit_box</mesh>
+						<scale>0.12 0.1 0.12</scale>
+						<material>Gazebo/Grey</material>
+					</visual>
+				</geom:box>
+			</body:box>
+		</model:physical>
 
 		<model:physical name="laser">
-			<xyz>0 0 0.16</xyz>
+			<xyz>-0.04 0 0.22</xyz>
 
 			<attach>
 				<parentBody>chassis_body</parentBody>
