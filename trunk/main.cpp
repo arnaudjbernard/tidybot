@@ -15,10 +15,11 @@ int main(int argc, char *argv[])
 	{
 		PlayerClient robot("localhost");
 		LaserProxy lp(&robot, 0);
-		Position2dProxy pp(&robot,1);
+		Position2dProxy pp(&robot,0);
 		CameraProxy cp(&robot,0);
 		LaserProxy sp(&robot,1);
 		LocalizeProxy LocalP(&robot, 0);
+		Position2dProxy pMCLp(&robot,1);
 	
 		pp.SetMotorEnable(true);
 		pp.SetSpeed(0, 0);
@@ -44,17 +45,17 @@ int main(int argc, char *argv[])
 		{
 			robot.Read(); // 10Hz by default
 
-			computePosition(lp, pp);
+			//computePosition(lp, pp);
 
 			switch(mode)
 			{
 			case 1://wander
 				if(VERBOSITY & 8)printf("Searching for a can.\n");
-				newControl = searchCan(lp, cp, pp);
+				newControl = searchCan(lp, cp, pMCLp);
 				break;
 			case 2://follow path
 				if(VERBOSITY & 8)printf("Going to storage place.\n");
-				newControl = followPath(lp, pp);
+				newControl = followPath(lp, pMCLp);
 				break;
 			case 3://grab can
 				if(VERBOSITY & 8)printf("Grabbing the can.\n");
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
 			}
 			
 			if(VERBOSITY & 4)printf("\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
-			pp.SetSpeed(newControl.rho/3, newControl.theta/2);
+			pp.SetSpeed(newControl.rho, newControl.theta);
 		}
 	}
 	catch (PlayerCc::PlayerError e)
@@ -83,9 +84,9 @@ int main(int argc, char *argv[])
 
 void computePosition(LaserProxy &lp, Position2dProxy &pp)
 {
-	double aX = 0, aY = 0, aYaw = 0;
+	//double aX = 0, aY = 0, aYaw = 0;
 	//Sethu's code?
-	pp.SetOdometry(aX, aY, aYaw);
+	//pp.SetOdometry(aX, aY, aYaw);
 }
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
