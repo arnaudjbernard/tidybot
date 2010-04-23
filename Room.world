@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!--
+ECE 8853 - Autonomous Control of Robotic Systems
+Project - Tidybot
+Sethu Madhav Bhattiprolu && Arnaud BERNARD
+Spring 2010
+-->
 <gazebo:world
 	xmlns:xi="http://www.w3.org/2001/XInclude"
 	xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
@@ -192,7 +198,7 @@
 		</model:physical>-->
 		<model:physical name="sonar_model">
 			<body:box name="sonar_body">
-				<xyz>0.15 0.06 -0.1</xyz>
+				<xyz>0.19 0.06 -0.1</xyz>
 				<rpy>0.0 0.0 0.0</rpy>
 					<sensor:ray name="sonar_0">
 						<rayCount>90</rayCount>

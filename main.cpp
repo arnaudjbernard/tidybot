@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 		LaserProxy lp(&robot, 0);
 		Position2dProxy pp(&robot,0);
 		CameraProxy cp(&robot,0);
-		LaserProxy sp(&robot,0);
+		LaserProxy sp(&robot,1);
 	
 		pp.SetMotorEnable(true);
 		pp.SetSpeed(0, 0);
@@ -253,7 +253,7 @@ player_pose2d locateCan(LaserProxy &sp)
 	//TODO correct the bug
 	double min = sp.GetMaxRange() ;
 	unsigned int minI = sp.GetCount() + 1;
-	for (unsigned int i = 0; i < sp.GetCount(); i+=5)
+	for (unsigned int i = 0; i < sp.GetCount(); i++)
 	{
 		//printf("%d:%f	",i, sp.GetRange(i));
 		if(sp.GetRange(i) < min)
@@ -264,7 +264,7 @@ player_pose2d locateCan(LaserProxy &sp)
 	}
 	if(min < sp.GetMaxRange())
 	{
-		double angleRad = -45*PI/180 + sp.GetScanRes()*minI;//sp.GetMinAngle() doesn't work?
+		double angleRad = sp.GetMinAngle() + sp.GetScanRes()*minI;// doesn't work?
 		//printf("can ang	%lf	%lf %lf %lf %lf %d\n",angleRad, min, sp.GetMinAngle(), sp.GetScanRes(),sp.GetMaxRange(),minI);
 		result.pa = 1;
 		result.px = std::sin(angleRad)*min;
