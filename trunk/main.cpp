@@ -15,12 +15,18 @@ int main(int argc, char *argv[])
 	{
 		PlayerClient robot("localhost");
 		LaserProxy lp(&robot, 0);
-		Position2dProxy pp(&robot,0);
+		Position2dProxy pp(&robot,1);
 		CameraProxy cp(&robot,0);
 		LaserProxy sp(&robot,1);
+		LocalizeProxy LocalP(&robot, 0);
 	
 		pp.SetMotorEnable(true);
 		pp.SetSpeed(0, 0);
+		
+		//Set the initial Position for the MCL
+		double initialPose[] = {0, 0, 0};
+		double covariance[]  = {0.2, 0.2, 0.27};
+		LocalP.SetPose(initialPose,covariance);
 	
 		robot.Read();
 		if(!cp.GetImageSize())
@@ -354,6 +360,7 @@ Vect wander(Position2dProxy &pp)
 	Vect result;
 	int xpos = floor(pp.GetXPos());
 	int ypos = floor(pp.GetYPos());
+	printf("\npose:%d	%d\n\n",xpos,ypos);
 	result.rho = 1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 ];
 	result.theta = (1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 + 1]) * PI - pp.GetYaw();
 	if(VERBOSITY & 8)printf("wander		%lf	%lf\n",result.rho, rtod(result.theta));
