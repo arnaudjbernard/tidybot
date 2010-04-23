@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 		{
 			robot.Read(); // 10Hz by default
 
-			//computePosition(lp, pp);
+			computePosition(lp, pp, pMCLp);
 
 			switch(mode)
 			{
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 				return -2;
 			}
 			
-			if(VERBOSITY & 4)printf("\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
+			if(VERBOSITY & 4)printf("Setting robot speed to [speed, turnrate] = [%lf	%lf]\n\n",newControl.rho, newControl.theta);
 			pp.SetSpeed(newControl.rho, newControl.theta);
 		}
 	}
@@ -82,11 +82,10 @@ int main(int argc, char *argv[])
 	return 0; //unreachable
 }
 
-void computePosition(LaserProxy &lp, Position2dProxy &pp)
+void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp)
 {
-	//double aX = 0, aY = 0, aYaw = 0;
-	//Sethu's code?
-	//pp.SetOdometry(aX, aY, aYaw);
+	// This part is done by player automatically.
+	if(VERBOSITY & 4)printf("Computed position from the MCL: [%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetXPos(), rtod(pMCLp.GetYaw()));
 }
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
@@ -97,21 +96,12 @@ Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
 	cp.GetImage(imgBuffer);
 	player_pose2d position = locateCan(imgClean);
 	
-	if(VERBOSITY & 8)printf("\nVector			rho		theta\n");
+	if(VERBOSITY & 8)printf("Vector		rho		theta\n");
 	if(VERBOSITY & 8)printf("---------------------------------------------------\n");
 	
 	Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pp), goToBeacon(position)), pp);
 
-	if(!reachedBeacon)
-	{
-		if(VERBOSITY & 4)printf("\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",newControl.rho, newControl.theta);
-		return Vect(newControl.rho/3, newControl.theta/2);
-	}
-	else
-	{
-		if(VERBOSITY & 4)printf("\nBeacon reached!\n");
-		return Vect(0.0, 0.0);
-	}
+	return Vect(newControl.rho/3, newControl.theta/2);
 }
 
 Vect followPath(LaserProxy &lp, Position2dProxy &pp)
@@ -360,10 +350,18 @@ Vect wander(Position2dProxy &pp)
 {
 	Vect result;
 	int xpos = floor(pp.GetXPos());
-	int ypos = floor(pp.GetYPos());
-	printf("\npose:%d	%d\n\n",xpos,ypos);
-	result.rho = 1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 ];
-	result.theta = (1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 + 1]) * PI - pp.GetYaw();
+	int ypos = -floor(pp.GetYPos());
+	if( xpos <= mapSize[0] && ypos <= mapSize[1] && xpos >= 0 && ypos >= 0)
+	{
+		result.rho = 1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 ];
+		result.theta = (1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 + 1]) * PI - pp.GetYaw();
+	}
+	else
+	{
+		if(VERBOSITY & 2)printf("Warning: robot is lost, estimated position: %d	%d\n", xpos, ypos);
+		result.rho = 0;
+		result.theta = 0;
+	}
 	if(VERBOSITY & 8)printf("wander		%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
@@ -392,7 +390,6 @@ Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV)
 	else
 	{
 		result = avoidObstaclesV * 0*1.0 + wanderV *0* 0.2 + goToBeaconV * 1.0;
-	if(VERBOSITY & 8)printf("vectCombine	%lf	%lf\n",result.rho, rtod(result.theta));
 	}
 	if(VERBOSITY & 8)printf("vectCombine	%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;

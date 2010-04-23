@@ -41,7 +41,7 @@ Vect goToBeacon(player_pose2d position);
 Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV);
 Vect move(Vect combinedVect, Position2dProxy &pp);
 
-void computePosition(LaserProxy &lp, Position2dProxy &pp);
+void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp);
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp);
 Vect followPath(LaserProxy &lp, Position2dProxy &pp);
