@@ -37,19 +37,29 @@
 		<ambient>1.0 1.0 1.0 1</ambient>
 		<grid>0</grid>
 		<sky>
-			<material>Gazebo/Grey</material>
+			<material>Gazebo/CloudySky</material>
 		</sky>
-		<fog>
-			<type>none</type>
-			<color>1 1 1 1</color>
-			<linearStart>0</linearStart>
-			<linearEnd>0</linearEnd>
-			<density>0</density>
-		</fog>
-		<shadowTechnique>stencilAdditive</shadowTechnique>
-		<shadowTextureSize>512</shadowTextureSize>
-		<shadowIndexSize>10000</shadowIndexSize>
 	</rendering:ogre>
+
+   <!--Point light -->
+   <!--Without Light The Arm Looks dull(grey) without shining -->
+   <!--Remove This if there are Problems with Object Detection as this may cast Shadows-->
+  <!-- White Point light -->
+  <model:renderable name="point_white">
+    <xyz>0 0 5</xyz>
+    <static>true</static>
+
+    <light>
+      <type>point</type>
+      <diffuseColor>0.4 0.4 0.4</diffuseColor>
+      <specularColor>.1 .1 .1</specularColor>
+      <range>20</range>
+
+      <!-- Constant(0-1) Linear(0-1) Quadratic -->
+      <attenuation>0.5 0.01 0.001</attenuation>
+    </light>
+  </model:renderable>
+
 
 	<rendering:gui>
 		<type>fltk</type>
@@ -66,8 +76,9 @@
 	</rendering:gui>
 
 	<!-- plan	-->
+	<!--Sethu:Repositioning Map to match to MAP driver-->
 	<model:physical name="plane1_model">
-		<xyz>9 9 0</xyz>
+		<xyz>0 0 0</xyz>
 		<rpy>0 -0 0</rpy>
 		<enableGravity>1</enableGravity>
 		<enableFriction>1</enableFriction>
@@ -93,9 +104,10 @@
 	</model:physical>
 
 	<!-- Map-->
+	<!--Sethu:Repositioning Map to match to MAP driver-->
 	<model:physical name="map">
 		<static>true</static>
-		<xyz>-2 -2 0</xyz>
+		<xyz>-11 -11 0</xyz>
 		<rpy>0 -0 0</rpy>
 		<body:map name="map_body">
 			<geom:map name="map_geom">
@@ -116,7 +128,7 @@
 	-->
 	<!-- Coca cola can -->
 	<model:physical name="cokeCan1">
-		<xyz>2 0 0.40</xyz>
+		<xyz>1 0 0.30</xyz>
 		<rpy>0 0 0</rpy>
 		<body:cylinder name="cokeCan1_body">
 			<geom:cylinder name="cokeCan1_geom">
@@ -133,7 +145,7 @@
 	
 	<!-- Sprite can -->
 	<model:physical name="sprite1">
-		<xyz>2 1 0.40</xyz>
+		<xyz>1 1 0.30</xyz>
 		<rpy>0 0 0</rpy>
 		<body:cylinder name="sprite1_body">
 			<geom:cylinder name="sprite1_geom">
@@ -150,50 +162,70 @@
 
 	<!-- Pioneer with attached arm -->
 	<model:physical name="pioneer2at_01">
-		<xyz>0 0 0.25</xyz>
+		<xyz>0 0 0.225</xyz>
 		<rpy>0.0 0.0 0.0</rpy>
 		
-		<!-- Pioneer 5-dof Arm 
-		<model:physical name="pioneerarm_01">
-			<xyz> -0.150	0.000	0.060</xyz>
-			<rpy>		0.0		0.0	180.0</rpy>
-			<attach>
-				<parentBody>chassis_body</parentBody>
-				<myBody>base_body</myBody>
-			</attach>
-			<include embedded="true">
-				<xi:include href="models/pioneerarm.model" />
-			</include>
-		</model:physical>-->
+		<!-- Pioneer 5-dof Arm -->
+    <model:physical name="pioneerarm_01">
+      <xyz>0.12 0.000 0.06</xyz>
+      <rpy>0.0 0.0 0.0</rpy>
+
+      <attach>
+        <parentBody>chassis_body</parentBody>
+        <myBody>base_body</myBody>
+      </attach>
+
+      <include embedded="true">
+        <xi:include href="models/pioneerarm.model" />
+      </include>
+    </model:physical>
 		
-		<!-- GPS 
-		<model:physical name="gps_model">
-			<xyz>0.0 0.0 0.0</xyz>
-			<rpy>0 0 0</rpy>
-			<static>false</static>
-			<controller:generic_gps name="gps_controller">
-				<!-rateP
-				utmOffsetEastP
-				utmOffsetNorthP
-				utmOffsetElevationP
-				utmZoneP
-				sigmaOffsetP
-				sigmaRepeatabilityP->
-				<sigmaRepeatabilityP>0</sigmaRepeatabilityP>
-				<interface:gps name="gps_iface_0"/>
-			</controller:generic_gps>
+		<!-- Sonar : Sonar controller is not implemented yet, use short range laser instead
+		<model:physical name="sonar_model">
+			<controller:generic_sonar name="sonar_controller">
+				<interface:sonar name="sonar_iface_0"/>
+			</controller:generic_sonar>
 		</model:physical>-->
+
+		
+		<model:physical name="sonar_model">
+			<body:box name="sonar_body">
+				<xyz>0.15 0.06 -0.1</xyz>
+				<rpy>0.0 0.0 0.0</rpy>
+					<sensor:ray name="sonar_0">
+						<rayCount>90</rayCount>
+						<rangeCount>101</rangeCount>
+						<origin>0.0 0.0 0</origin>
+
+						<!--<displayRays>false</displayRays>-->
+						<displayRays>fan</displayRays>
+
+						<minAngle>-45</minAngle>
+						<maxAngle>45</maxAngle>
+
+						<minRange>0.1</minRange>
+						<maxRange>0.6</maxRange>
+						<resRange>1</resRange>
+
+						<controller:sicklms200_laser name="sonar_controller_0">
+							<interface:laser name="sonar_iface_0"/>
+							<interface:fiducial name="sonar_iface_0"/>
+						</controller:sicklms200_laser>
+					</sensor:ray>
+			</body:box>
+		</model:physical>
 
 		<!-- Camera <updatePeriod>0.1</updatePeriod>-->
 		<model:physical name="cam1_model">
-			<xyz>0.1 0.0 0.4</xyz>
-			<rpy>0 15 0</rpy>
+			<xyz>0.2 0.0 0.00</xyz>
+			<rpy>0 21 0</rpy>
 			<static>false</static>
 			<body:empty name="cam1_body">
 				<sensor:camera name="cam1_sensor">
 					<imageSize>320 240</imageSize>
+					<hfov>70</hfov>
 					<nearClip>0.3</nearClip>
-					<farClip>10</farClip>
+					<farClip>0.2</farClip>
 					<saveFrames>0</saveFrames>
 					<saveFramePath>frames</saveFramePath>
 					<controller:generic_camera name="cam1_controller">
@@ -203,15 +235,29 @@
 			</body:empty>
 		</model:physical>
 
+		<model:physical name="filler">
+      <xyz>-0.04 0 0.06</xyz>
+      <attach>
+        <parentBody>chassis_body</parentBody>
+				<myBody>filler_body</myBody>
+      </attach>
+      <body:box name="filler_body">
+        <geom:box name="filler_geom">
+          <size>0.12 0.1 0.12</size>
+          <mass>0.05</mass>
+          <visual>
+            <mesh>unit_box</mesh>
+            <scale>0.12 0.1 0.12</scale>
+            <material>Gazebo/Grey</material>
+          </visual>
+        </geom:box>
+      </body:box>
+		
+		</model:physical>
+
 
 		<model:physical name="laser">
-			<xyz>0 0 0.16</xyz>
-
-			<attach>
-				<parentBody>chassis_body</parentBody>
-				<myBody>laser_body</myBody>
-			</attach>
-
+			<xyz>-0.04 0 0.22</xyz>			
 			<include embedded="true">
 				<xi:include href="models/sicklms200.model" />
 			</include>
