@@ -56,6 +56,7 @@ Spring 2010
 		<shadowTextureSize>512</shadowTextureSize>
 		<shadowIndexSize>10000</shadowIndexSize>
 	</rendering:ogre>
+
 	<!--Point light -->
 	<!--Without Light The Arm Looks dull(grey) without shining -->
 	<!--Remove This if there are Problems with Object Detection as this may cast Shadows-->
@@ -63,7 +64,6 @@ Spring 2010
 	<model:renderable name="point_white">
 		<xyz>0 0 5</xyz>
 		<static>true</static>
-
 		<light>
 			<type>point</type>
 			<diffuseColor>0.4 0.4 0.4</diffuseColor>
@@ -75,23 +75,24 @@ Spring 2010
 		</light>
 	</model:renderable>
 
+	<!-- Gui camera	-->
 	<rendering:gui>
 		<type>fltk</type>
 		<size>1000 700</size>
 		<pos>0 0</pos>
 		<frames>
-		<row height="100%">
-		<camera width="100%">
-		<xyz>0 0 0</xyz>
-		<rpy>0 0 0</rpy>
-		</camera>
-		</row>
+			<row height="100%">
+				<camera width="100%">
+					<xyz>0 0 0</xyz>
+					<rpy>0 0 0</rpy>
+				</camera>
+			</row>
 		</frames>
 	</rendering:gui>
 
 	<!-- plan	-->
 	<model:physical name="plane1_model">
-		<xyz>1 1 0</xyz>
+		<xyz>0 0 0</xyz>
 		<rpy>0 -0 0</rpy>
 		<enableGravity>1</enableGravity>
 		<enableFriction>1</enableFriction>
@@ -103,7 +104,7 @@ Spring 2010
 			<rpy>0 -0 0</rpy>
 
 			<geom:plane name="plane1_geom">
-				<xyz>0 0 0</xyz>
+				<xyz>1 1 0</xyz>
 				<rpy>0 -0 0</rpy>
 				<normal>0 0 1</normal>
 				<size>22 22</size>
@@ -128,7 +129,7 @@ Spring 2010
 				<granularity>1</granularity>
 				<negative>false</negative>
 				<scale>1</scale>
-		<material>Gazebo/PaintedWall</material>
+				<material>Gazebo/PaintedWall</material>
 			</geom:map>
 		</body:map>
 	</model:physical>
@@ -140,7 +141,7 @@ Spring 2010
 	-->
 	<!-- Coca cola can -->
 	<model:physical name="cokeCan1">
-		<xyz>-7 -9 0.40</xyz>
+		<xyz>8 9 0.40</xyz>
 		<rpy>0 0 0</rpy>
 		<body:cylinder name="cokeCan1_body">
 			<geom:cylinder name="cokeCan1_geom">
@@ -157,7 +158,7 @@ Spring 2010
 	
 	<!-- Sprite can -->
 	<model:physical name="sprite1">
-		<xyz>-7 -8 0.40</xyz>
+		<xyz>-6 4 0.40</xyz>
 		<rpy>0 180 0</rpy>
 		<body:cylinder name="sprite1_body">
 			<geom:cylinder name="sprite1_geom">
@@ -181,18 +182,16 @@ Spring 2010
 		<model:physical name="pioneerarm_01">
 			<xyz>0.155 0.000 0.06</xyz>
 			<rpy>0.0 0.0 0.0</rpy>
-
 			<attach>
 				<parentBody>chassis_body</parentBody>
 				<myBody>base_body</myBody>
 			</attach>
-
-				<include embedded="true">
-					<xi:include href="models/pioneerarm.model" />
-				</include>
+			<include embedded="true">
+				<xi:include href="models/pioneerarm.model" />
+			</include>
 		</model:physical>
 		
-		<!-- GPS 
+		<!-- GPS: not working correctly (position is not updated when robot moves)
 		<model:physical name="gps_model">
 			<xyz>0.0 0.0 0.0</xyz>
 			<rpy>0 0 0</rpy>
@@ -216,6 +215,7 @@ Spring 2010
 				<interface:sonar name="sonar_iface_0"/>
 			</controller:generic_sonar>
 		</model:physical>-->
+
 		<model:physical name="sonar_model">
 			<body:box name="sonar_body">
 				<xyz>0.19 0.06 -0.1</xyz>
@@ -243,7 +243,7 @@ Spring 2010
 			</body:box>
 		</model:physical>
 
-		<!-- Camera <updatePeriod>0.1</updatePeriod>-->
+		<!-- Camera (pioneer webcam) <updatePeriod>0.1</updatePeriod>-->
 		<model:physical name="cam1_model">
 			<xyz>-0.05 0.0 0.4</xyz>
 			<rpy>0 21 0</rpy>
@@ -282,14 +282,13 @@ Spring 2010
 			</body:box>
 		</model:physical>
 
+		<!-- Laser range finder -->
 		<model:physical name="laser">
 			<xyz>-0.04 0 0.22</xyz>
-
 			<attach>
 				<parentBody>chassis_body</parentBody>
 				<myBody>laser_body</myBody>
 			</attach>
-
 			<include embedded="true">
 				<xi:include href="models/sicklms200.model" />
 			</include>
