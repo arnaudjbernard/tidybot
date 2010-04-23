@@ -24,7 +24,10 @@ Vect.o: Vect.cpp Vect.hpp
 
 map:
 	python map/convert.py
-	python map/convertL.py
+	python map/convertL.py*
+
+texture:
+	python gazebo/textures.py
 
 mrproper: clean
 	find . -name "*~" -exec rm {} \;
