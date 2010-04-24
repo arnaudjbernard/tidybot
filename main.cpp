@@ -10,6 +10,7 @@
 int main(int argc, char *argv[])
 {	
 	init();
+	PathPlanner pathPlanner;
 	
 	try
 	{
@@ -20,6 +21,7 @@ int main(int argc, char *argv[])
 		LaserProxy sp(&robot,1);
 		LocalizeProxy LocalP(&robot, 0);
 		Position2dProxy pMCLp(&robot,1);
+
 	
 		pp.SetMotorEnable(true);
 		pp.SetSpeed(0, 0);
@@ -55,7 +57,7 @@ int main(int argc, char *argv[])
 				break;
 			case 2://follow path
 				if(VERBOSITY & 8)printf("Going to storage place.\n");
-				newControl = followPath(lp, pMCLp);
+				newControl = followPath(lp, pMCLp, pathPlanner);
 				break;
 			case 3://grab can
 				if(VERBOSITY & 8)printf("Grabbing the can.\n");
@@ -85,7 +87,7 @@ int main(int argc, char *argv[])
 void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp)
 {
 	// This part is done by player automatically.
-	if(VERBOSITY & 4)printf("Computed position from the MCL: [%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetXPos(), rtod(pMCLp.GetYaw()));
+	if(VERBOSITY & 4)printf("Computed position from the MCL: [%lf	%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetYPos(), rtod(pMCLp.GetYaw()));
 }
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
@@ -104,9 +106,10 @@ Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
 	return Vect(newControl.rho/3, newControl.theta/2);
 }
 
-Vect followPath(LaserProxy &lp, Position2dProxy &pp)
+Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner)
 {
 	//TODO
+	pathPlanner.getWayPoints(std::pair<int, int>(0, 0), std::pair<int, int>(19, 19));
 	return Vect(0,0);
 }
 
@@ -422,3 +425,5 @@ Vect move(Vect combinedVect, Position2dProxy &pp)
 	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
+
+

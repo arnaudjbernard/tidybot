@@ -142,7 +142,7 @@ Spring 2010
 	<!-- Coca cola can -->
 	<model:physical name="cokeCan1">
 		<xyz>8 9 0.40</xyz>
-		<rpy>0 0 0</rpy>
+		<rpy>0 180 0</rpy>
 		<body:cylinder name="cokeCan1_body">
 			<geom:cylinder name="cokeCan1_geom">
 			<size>0.04 0.15</size>
@@ -155,7 +155,7 @@ Spring 2010
 			</geom:cylinder>
 		</body:cylinder>
 	</model:physical>
-	
+
 	<!-- Sprite can -->
 	<model:physical name="sprite1">
 		<xyz>-6 4 0.40</xyz>
@@ -168,6 +168,23 @@ Spring 2010
 				<mesh>unit_cylinder</mesh>
 				<scale>0.08 0.08 0.15</scale>
 				<material>Custom/sprite</material>
+				</visual>
+			</geom:cylinder>
+		</body:cylinder>
+	</model:physical>
+	
+	<!-- Coca cola can -->
+	<model:physical name="cokeCan2">
+		<xyz>-7 -7 0.40</xyz>
+		<rpy>0 180 0</rpy>
+		<body:cylinder name="cokeCan2_body">
+			<geom:cylinder name="cokeCan2_geom">
+			<size>0.04 0.15</size>
+			<mass>0.01</mass>
+			<visual>
+				<mesh>unit_cylinder</mesh>
+				<scale>0.08 0.08 0.15</scale>
+				<material>Custom/cocacola</material>
 				</visual>
 			</geom:cylinder>
 		</body:cylinder>
