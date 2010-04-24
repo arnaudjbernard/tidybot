@@ -14,6 +14,7 @@
 #include <time.h>
 #include <fstream>
 #include <string>
+#include <utility>
 
 #include <cv.h>
 #include <cxcore.h>
@@ -22,6 +23,9 @@
 	
 #include "args.h"
 #include "Vect.hpp"
+#include "Obstacle.hpp"
+#include "Node.hpp"
+#include "PathPlanner.hpp"
 
 #define RAYS			32
 #define SRAND_NB		5	// parameter for wander potential field
@@ -44,7 +48,7 @@ Vect move(Vect combinedVect, Position2dProxy &pp);
 void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp);
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp);
-Vect followPath(LaserProxy &lp, Position2dProxy &pp);
+Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner);
 Vect grabCan(LaserProxy &sp);
 Vect putDownCan();
 
@@ -92,7 +96,6 @@ bool canSeen;
 //PID
 double error;
 double integral;
-
 
 
 #endif
