@@ -31,7 +31,7 @@
 //16:	*process data
 //32:	non-denominated ones
 //64:	debug
-int VERBOSITY = 1 + 2 + 4 + 8;
+int VERBOSITY = 1 + 0*(2 + 4 + 8);
 
 
 
@@ -73,6 +73,8 @@ player_pose2d locateCan(LaserProxy &sp);
 // Global variables for convenient programming
 
 
+
+
 //modes:
 //1 - wander
 //2 - goto path
@@ -91,15 +93,17 @@ int cam_depth = 3;
 
 
 
-int nbBeacons, beacons[100], origin[2];//Error if more than 100 beacons
-int mapSize[2], beaconRange;
+//int origin[2];
+int mapSize[2];
 double *wanderField = NULL;
-bool reachedBeacon;
 bool canSeen;
+
+std::vector<std::pair<int, int> > path;
 
 //PID
 double error;
 double integral;
 
+int Split(std::vector<std::string>& vecteur, std::string chaine, char separateur);
 
 #endif

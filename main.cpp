@@ -25,12 +25,15 @@ int main(int argc, char *argv[])
 	
 		pp.SetMotorEnable(true);
 		pp.SetSpeed(0, 0);
-		
+
 		//Set the initial Position for the MCL
-		double initialPose[] = {0, 0, 0};
+		// this should match the actual position of the robot in the file Room.world
+		double initialPose[] = {1.5, 1.5, 0};
 		double covariance[]  = {0.2, 0.2, 0.27};
 		LocalP.SetPose(initialPose,covariance);
-	
+		
+		//TODO: Sethu move the arm out of sight
+		
 		robot.Read();
 		if(!cp.GetImageSize())
 		{
@@ -88,6 +91,7 @@ void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp
 {
 	// This part is done by player automatically.
 	if(VERBOSITY & 4)printf("Computed position from the MCL: [%lf	%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetYPos(), rtod(pMCLp.GetYaw()));
+	printf("Computed position from the MCL: [%lf	%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetYPos(), rtod(pMCLp.GetYaw()));
 }
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
@@ -109,13 +113,43 @@ Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
 Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner)
 {
 	//TODO
-	std::vector<std::pair<int, int> > path;
-	path = pathPlanner.getWayPoints(std::pair<int, int>(160, 160), std::pair<int, int>(1900, 1900));
-	//if close enough to zaypont
+	if(path.empty())
+	{
+		path = pathPlanner.getWayPoints(std::pair<int, int>(pp.GetXPos()*100, pp.GetYPos()*100), std::pair<int, int>(1900, 1900));
+		if(path.empty())
+		{
+			if(VERBOSITY & 1)printf("No path found, going down!\n");
+			exit(3);
+		}
+	}
+	std::pair<int, int> wayPoint = path[0];
+	while( std::pow(((float)wayPoint.first/100-pp.GetXPos()),2) + std::pow(((float)wayPoint.second/100-pp.GetYPos()),2) < 0.5)
+	//TODO eval the 0.5 influence and correct value
+	{
+	//if close enough to waypoint
 	//	suppress waypoint
+		if(VERBOSITY & 4)printf("Reached waypoint: 	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
+		printf("Reached waypoint: 	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
+		path.erase(path.begin());
+		wayPoint = path[0];
+		if(VERBOSITY & 4)printf("Going to waypoint:	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
+		printf("Going to waypoint:	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
+		if(path.empty())
+		{
+			mode = 4;
+			if(VERBOSITY & 4)printf("Reached trash can.\n");
+			return Vect(0,0);
+		}
+	}
 	//goto next way point
-	//if last mode = 4
-	return Vect(0,0);
+	Vect result;
+	result.rho = 1.0;
+	double dx = (float)wayPoint.first/100 - pp.GetXPos();
+	double dy = (float)wayPoint.second/100 - pp.GetYPos();
+	result.theta = 2*atan(dy/(dx+sqrt(pow(dx,2)+pow(dy,2)))) - pp.GetYaw();
+	result.rho = cos(result.theta) > 0 ? result.rho * cos(result.theta) : 0;
+	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho, rtod(result.theta));
+	return result;
 }
 
 Vect grabCan(LaserProxy &sp)
@@ -284,40 +318,27 @@ player_pose2d locateCan(LaserProxy &sp)
 
 void init()
 {
-	// Get beacons from text file ./beacons.txt created by python algorithm
-	/*nbBeacons = 0;
-	std::ifstream file("beacons.txt");
+
+	mapSize[0] = 22;
+	mapSize[1] = 22;
+	// get map size
+	std::ifstream file("map/Room.wld");
 	if(file)
 	{
 		std::string line;
 		while(std::getline(file, line))
 		{
-			beacons[nbBeacons] = atoi(line.c_str());
-			nbBeacons++;
+			if(VERBOSITY & 8)printf(".");
+			std::vector<std::string> tokens;
+			if(Split(tokens, line, ' '))
+			{
+				if(tokens[0] == "MapSize")
+				{
+					mapSize[0] = atoi(tokens[1].c_str())*100;
+					mapSize[1] = atoi(tokens[2].c_str())*100;
+				}
+			}
 		}
-	}
-	nbBeacons /= 2;*/
-
-	// get origin from text file ./origin.txt created by python algorithm
-	origin[0] = 0;
-	origin[1] = 0;
-	mapSize[0] = 22;
-	mapSize[1] = 22;
-	beaconRange = 1000;
-	std::ifstream file2("origin.txt");
-	if(file2)
-	{
-		std::string line;
-		std::getline(file2, line);
-		origin[0] = atoi(line.c_str());
-		std::getline(file2, line);
-		origin[1] = atoi(line.c_str());
-		std::getline(file2, line);
-		mapSize[0] = atoi(line.c_str());
-		std::getline(file2, line);
-		mapSize[1] = atoi(line.c_str());
-		std::getline(file2, line);
-		beaconRange = atoi(line.c_str());
 	}
 	
 	//initialize the random field 
@@ -385,7 +406,7 @@ Vect goToBeacon(player_pose2d position)
 	if(position.pa > 0)
 	{
 		result.rho = 1.0;
-		result.theta = -position.px * PI/2;
+		result.theta = -position.px * PI/4;
 	}
 
 	if(VERBOSITY & 8)printf("goToBeacon	%lf	%lf\n",result.rho, rtod(result.theta));
@@ -435,4 +456,20 @@ Vect move(Vect combinedVect, Position2dProxy &pp)
 	return result;
 }
 
+int Split(std::vector<std::string>& vecteur, std::string chaine, char separateur)
+{
+	vecteur.clear();
 
+	std::string::size_type stTemp = chaine.find(separateur);
+	
+	while(stTemp != std::string::npos)
+	{
+		vecteur.push_back(chaine.substr(0, stTemp));
+		chaine = chaine.substr(stTemp + 1);
+		stTemp = chaine.find(separateur);
+	}
+	
+	vecteur.push_back(chaine);
+
+	return vecteur.size();
+}
