@@ -31,7 +31,7 @@
 //16:	*process data
 //32:	non-denominated ones
 //64:	debug
-int VERBOSITY = 1 + 0*(2 + 4 + 8);
+int VERBOSITY = 1 + 2 + 4 + 8;
 
 
 
