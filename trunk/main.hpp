@@ -20,7 +20,21 @@
 #include <cxcore.h>
 #include <cvaux.h>
 #include <highgui.h>
-	
+
+
+//VERBOSITY level
+//0:	no output
+//1:	*****required output
+//2:	****greetings
+//4:	***main functions
+//8:	**functions process
+//16:	*process data
+//32:	non-denominated ones
+//64:	debug
+int VERBOSITY = 1 + 2 + 4 + 8;
+
+
+
 #include "args.h"
 #include "Vect.hpp"
 #include "Obstacle.hpp"
@@ -58,16 +72,6 @@ player_pose2d locateCan(LaserProxy &sp);
 
 // Global variables for convenient programming
 
-//VERBOSITY level
-//0:	no output
-//1:	*****required output
-//2:	****greetings
-//4:	***main functions
-//8:	**functions process
-//16:	*process data
-//32:	non-denominated ones
-//64:	debug
-int VERBOSITY = 1 + 2 + 4 + 8;
 
 //modes:
 //1 - wander

@@ -10,7 +10,7 @@
 int main(int argc, char *argv[])
 {	
 	init();
-	PathPlanner pathPlanner;
+	PathPlanner pathPlanner(VERBOSITY);
 	
 	try
 	{
@@ -109,7 +109,12 @@ Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
 Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner)
 {
 	//TODO
-	pathPlanner.getWayPoints(std::pair<int, int>(0, 0), std::pair<int, int>(19, 19));
+	std::vector<std::pair<int, int> > path;
+	path = pathPlanner.getWayPoints(std::pair<int, int>(160, 160), std::pair<int, int>(1900, 1900));
+	//if close enough to zaypont
+	//	suppress waypoint
+	//goto next way point
+	//if last mode = 4
 	return Vect(0,0);
 }
 
@@ -123,12 +128,14 @@ Vect grabCan(LaserProxy &sp)
 		return Vect(0,0);
 	}
 	//Sethu's grabbing code (position)
+	mode = 2;
 	return Vect(0,0);
 }
 
 Vect putDownCan()
 {
 	//Sethu's dropping code
+	mode = 1;
 	return Vect(0,0);
 }
 
@@ -230,7 +237,9 @@ player_pose2d locateCan(const cv::Mat &imgClean)
 		canPosition.py = ellipseBox.center.y/cam_height;
 		canPosition.px = (ellipseBox.center.x - cam_width/2)/(cam_width/2);
 		
-		if(ellipseBox.center.y + ellipseBox.size.height/2 > cam_height - TR_SWITCH_MODE_3)
+		if(ellipseBox.center.y + ellipseBox.size.height/2 > cam_height - TR_SWITCH_MODE_3
+			&& ellipseBox.size.height < cam_height / 2
+			&& ellipseBox.size.width <  cam_width / 2)
 		{
 			mode = 3;
 			canType = bestCoca ? 0 : 1;
