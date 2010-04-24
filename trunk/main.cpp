@@ -91,7 +91,6 @@ void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp
 {
 	// This part is done by player automatically.
 	if(VERBOSITY & 4)printf("Computed position from the MCL: [%lf	%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetYPos(), rtod(pMCLp.GetYaw()));
-	printf("Computed position from the MCL: [%lf	%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetYPos(), rtod(pMCLp.GetYaw()));
 }
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
