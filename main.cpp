@@ -9,26 +9,34 @@
 
 int main(int argc, char *argv[]) {
 	init();
+	//PathPlanner pathPlanner(VERBOSITY);
 
 	try {
 		PlayerClient robot("localhost");
 		LaserProxy lp(&robot, 0);
 		Position2dProxy pp(&robot, 0);
 		CameraProxy cp(&robot, 0);
-		LaserProxy sp(&robot, 0);
+		LaserProxy sp(&robot, 1);
 		LocalizeProxy LocalP(&robot, 0);
-		PlannerProxy PlanP(&robot, 0);
+		Position2dProxy pMCLp(&robot, 1);
+		ActArrayProxy aa(&robot, 0);
 
 		pp.SetMotorEnable(true);
 		pp.SetSpeed(0, 0);
+
+		aa.MoveTo(0, -PI / 2);
+		aa.MoveTo(1, 0);
+		aa.MoveTo(2, -PI / 4);
+
 		//Set the initial Position for the MCL
-		double initialPose[] = {0, 0, 0};
-		double covariance[]  = {0.2, 0.2, 0.27};
-		LocalP.SetPose(initialPose,covariance);
+		// this should match the actual position of the robot in the file Room.world
+		double initialPose[] = { 1.5, 1.5, 0 };
+		double covariance[] = { 0.2, 0.2, 0.27 };
+		LocalP.SetPose(initialPose, covariance);
 
-
-		//Set the Goal Postion for the Planner
-		PlanP.SetGoalPose(-3,-3,0);
+		aa.MoveTo(0, -PI / 2);
+		aa.MoveTo(1, 0);
+		aa.MoveTo(2, -PI / 4);
 
 		robot.Read();
 		if (!cp.GetImageSize()) {
@@ -45,32 +53,29 @@ int main(int argc, char *argv[]) {
 		for (;;) {
 			robot.Read(); // 10Hz by default
 
-			//computePosition(lp, pp);
+			computePosition(lp, pp, pMCLp);
 
-			//Get the Current Position using MCL
-			std::cout<<"x="<<PlanP.GetGx()<<"y="<<PlanP.GetGy()<<"a="<<PlanP.GetGa();
-
-/*
 			switch (mode) {
 			case 1://wander
 				if (VERBOSITY & 8)
 					printf("Searching for a can.\n");
-				newControl = searchCan(lp, cp, pp);
+				newControl = searchCan(lp, cp, pMCLp);
 				break;
 			case 2://follow path
 				if (VERBOSITY & 8)
 					printf("Going to storage place.\n");
-				newControl = followPath(lp, pp);
+				//newControl = followPath(lp, pMCLp, pathPlanner);
+				newControl = followPath(lp, pMCLp);
 				break;
 			case 3://grab can
 				if (VERBOSITY & 8)
 					printf("Grabbing the can.\n");
-				newControl = grabCan(sp);
+				newControl = grabCan(robot, sp, pp, pMCLp, aa);
 				break;
 			case 4://put down can
 				if (VERBOSITY & 8)
 					printf("Putting down the can.\n");
-				newControl = putDownCan();
+				newControl = putDownCan(aa);
 				break;
 			default:
 				if (VERBOSITY & 1)
@@ -80,9 +85,9 @@ int main(int argc, char *argv[]) {
 
 			if (VERBOSITY & 4)
 				printf(
-						"\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",
+						"Setting robot speed to [speed, turnrate] = [%lf	%lf]\n\n",
 						newControl.rho, newControl.theta);
-			pp.SetSpeed(newControl.rho / 3, newControl.theta / 2);*/
+			pp.SetSpeed(newControl.rho, newControl.theta);
 		}
 	} catch (PlayerCc::PlayerError e) {
 		std::cerr << e << std::endl;
@@ -91,10 +96,12 @@ int main(int argc, char *argv[]) {
 	return 0; //unreachable
 }
 
-void computePosition(LaserProxy &lp, Position2dProxy &pp) {
-	double aX = 0, aY = 0, aYaw = 0;
-	//Sethu's code?
-	pp.SetOdometry(aX, aY, aYaw);
+void computePosition(LaserProxy &lp, Position2dProxy &pp,
+		Position2dProxy &pMCLp) {
+	// This part is done by player automatically.
+	if (VERBOSITY & 4)
+		printf("Computed position from the MCL: [%lf	%lf	%lf]\n",
+				pMCLp.GetXPos(), pMCLp.GetYPos(), rtod(pMCLp.GetYaw()));
 }
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp) {
@@ -105,44 +112,147 @@ Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp) {
 	player_pose2d position = locateCan(imgClean);
 
 	if (VERBOSITY & 8)
-		printf("\nVector			rho		theta\n");
+		printf("Vector		rho		theta\n");
 	if (VERBOSITY & 8)
 		printf("---------------------------------------------------\n");
 
 	Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pp),
 			goToBeacon(position)), pp);
 
-	if (!reachedBeacon) {
-		if (VERBOSITY & 4)
-			printf("\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",
-					newControl.rho, newControl.theta);
-		return Vect(newControl.rho / 3, newControl.theta / 2);
-	} else {
-		if (VERBOSITY & 4)
-			printf("\nBeacon reached!\n");
-		return Vect(0.0, 0.0);
-	}
+	return Vect(newControl.rho / 3, newControl.theta / 2);
 }
-
 Vect followPath(LaserProxy &lp, Position2dProxy &pp) {
 	//TODO
 	return Vect(0, 0);
 }
+Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
+		Position2dProxy &pMCLp, ActArrayProxy &aa) {
+	int robot_x, robot_y;
+	/*player_pose2d position = locateCan(sp);
+	 if(position.pa < 0)
+	 {
+	 if(VERBOSITY & 2)printf("Cannot find the can with sonar, restart looking for it.\n");
+	 mode = 1;
+	 return Vect(0,0);
+	 }*/
 
-Vect grabCan(LaserProxy &sp) {
-	player_pose2d position = locateCan(sp);
-	if (position.pa < 0) {
-		if (VERBOSITY & 2)
-			printf("Cannot find the can with sonar, restart looking for it.\n");
-		mode = 1;
-		return Vect(0, 0);
+	//Stop the Robot
+	pp.SetSpeed(0, 0);
+
+	if (VERBOSITY & 8)
+		printf("\n In Grab Can .....\n\n");
+	//Get my position
+	robot_x = pMCLp.GetXPos();
+	robot_y = pMCLp.GetYPos();
+
+	//Get the Can position from the laser
+	//Get the min Range
+	double min_range;
+	double min_angle;
+
+	while (1) {
+		min_range = min(sp.GetMinLeft(), sp.GetMinRight());
+		for (int i = 0; i < sp.GetCount(); i++) {
+			if (sp.GetRange(i) == min_range)
+				min_angle = sp.GetMinAngle() + sp.GetScanRes() * i;
+		}
+
+		//turn to move min_angle to zero..
+		if (min_angle < 0.01 && min_angle > -0.01) {
+			pp.SetSpeed(0, 0);
+			break;
+		} else {
+			pp.SetSpeed(0, min_angle);
+			if (min_range == 0.7)
+				break;
+
+		}
+		robot.Read();
+
 	}
-	//Sethu's grabbing code (position)
+	sleep(2);
+
+	while (min_range >= 0.36 || min_range <= 0.34) {
+
+		pp.SetSpeed(min_range - 0.35, 0);
+		robot.Read();
+		min_range = min(sp.GetMinLeft(), sp.GetMinRight());
+		if (min_range == 0.7)
+			break;
+	}
+
+	pp.SetSpeed(0, 0);
+
+	aa.MoveTo(2, 0);
+	aa.MoveTo(0, 0);
+
+	sleep(2);
+
+	//open Gripper
+	aa.MoveTo(5, -1);
+	aa.MoveTo(6, 1);
+
+	sleep(2);
+
+	aa.MoveTo(4, -1.57);
+	sleep(2);
+	aa.MoveTo(2, -0.78);
+	sleep(2);
+	aa.MoveTo(1, -0.78);
+	sleep(2);
+	//Move Forward
+
+	pp.SetSpeed((min_range - 0.1) * 0.25, 0);
+	sleep(2);
+	pp.SetSpeed(0, 0);
+
+	//Grip the Can
+	aa.MoveTo(5, 0);
+	sleep(2);
+	aa.MoveTo(6, 0);
+	sleep(2);
+
+	//Go To Home Position
+
+
+	aa.MoveTo(2, -PI / 4);
+	sleep(2);
+	aa.MoveTo(1, 0);
+	sleep(2);
+	aa.MoveTo(0, -PI / 2);
+	sleep(2);
+
+	mode = 4;
 	return Vect(0, 0);
 }
 
-Vect putDownCan() {
-	//Sethu's dropping code
+Vect putDownCan(ActArrayProxy &aa) {
+
+	aa.MoveTo(4, -1.57);
+	sleep(2);
+	aa.MoveTo(0, 0);
+	sleep(2);
+	aa.MoveTo(1, -0.78);
+	sleep(2);
+	aa.MoveTo(2, -0.78);
+	sleep(2);
+
+
+	//open Gripper
+	aa.MoveTo(5, -1);
+	sleep(2);
+	aa.MoveTo(6, 1);
+	sleep(2);
+
+	//Go To Home Position
+	aa.MoveTo(2, -PI / 4);
+	sleep(2);
+	aa.MoveTo(1, 0);
+	sleep(2);
+	aa.MoveTo(0, -PI / 2);
+	sleep(2);
+
+	mode = 1;
 	return Vect(0, 0);
 }
 
@@ -182,8 +292,8 @@ player_pose2d locateCan(const cv::Mat &imgClean) {
 	maskCoca.setTo(cv::Scalar(255), maskRed);
 	maskSprite.setTo(cv::Scalar(255), maskBlue);
 
-	cv::erode(maskCoca, maskCoca, cv::Mat::ones(5, 5, CV_8UC1 ));
-	cv::erode(maskSprite, maskSprite, cv::Mat::ones(5, 5, CV_8UC1 ));
+	cv::erode(maskCoca, maskCoca, cv::Mat::ones(5, 5, CV_8UC1));
+	cv::erode(maskSprite, maskSprite, cv::Mat::ones(5, 5, CV_8UC1));
 	//cv::dilate(mask, mask, cv::Mat::ones( 5,5,CV_8UC1 ));
 	//cv::imshow("mask", mask);
 	//planes[2].setTo(cv::Scalar(0), mask);
@@ -244,7 +354,8 @@ player_pose2d locateCan(const cv::Mat &imgClean) {
 				/ (cam_width / 2);
 
 		if (ellipseBox.center.y + ellipseBox.size.height / 2 > cam_height
-				- TR_SWITCH_MODE_3) {
+				- TR_SWITCH_MODE_3 && ellipseBox.size.height < cam_height / 2
+				&& ellipseBox.size.width < cam_width / 2) {
 			mode = 3;
 			canType = bestCoca ? 0 : 1;
 			if (VERBOSITY & 2)
@@ -263,10 +374,9 @@ player_pose2d locateCan(const cv::Mat &imgClean) {
 player_pose2d locateCan(LaserProxy &sp) {
 	player_pose2d result;
 	result.pa = -1;
-	//TODO correct the bug
 	double min = sp.GetMaxRange();
 	unsigned int minI = sp.GetCount() + 1;
-	for (unsigned int i = 0; i < sp.GetCount(); i += 5) {
+	for (unsigned int i = 0; i < sp.GetCount(); i++) {
 		//printf("%d:%f	",i, sp.GetRange(i));
 		if (sp.GetRange(i) < min) {
 			min = sp.GetRange(i);
@@ -274,7 +384,7 @@ player_pose2d locateCan(LaserProxy &sp) {
 		}
 	}
 	if (min < sp.GetMaxRange()) {
-		double angleRad = -45 * PI / 180 + sp.GetScanRes() * minI;//sp.GetMinAngle() doesn't work?
+		double angleRad = sp.GetMinAngle() + sp.GetScanRes() * minI;// doesn't work?
 		//printf("can ang	%lf	%lf %lf %lf %lf %d\n",angleRad, min, sp.GetMinAngle(), sp.GetScanRes(),sp.GetMaxRange(),minI);
 		result.pa = 1;
 		result.px = std::sin(angleRad) * min;
@@ -284,41 +394,42 @@ player_pose2d locateCan(LaserProxy &sp) {
 		printf("Sonar sees can at	%lf	%lf\n", result.px, result.py);
 	return result;
 }
+int Split(std::vector<std::string>& vecteur, std::string chaine,
+		char separateur) {
+	vecteur.clear();
+
+	std::string::size_type stTemp = chaine.find(separateur);
+
+	while (stTemp != std::string::npos) {
+		vecteur.push_back(chaine.substr(0, stTemp));
+		chaine = chaine.substr(stTemp + 1);
+		stTemp = chaine.find(separateur);
+	}
+
+	vecteur.push_back(chaine);
+
+	return vecteur.size();
+}
 
 void init() {
-	// Get beacons from text file ./beacons.txt created by python algorithm
-	/*nbBeacons = 0;
-	 std::ifstream file("beacons.txt");
-	 if(file)
-	 {
-	 std::string line;
-	 while(std::getline(file, line))
-	 {
-	 beacons[nbBeacons] = atoi(line.c_str());
-	 nbBeacons++;
-	 }
-	 }
-	 nbBeacons /= 2;*/
 
-	// get origin from text file ./origin.txt created by python algorithm
-	origin[0] = 0;
-	origin[1] = 0;
 	mapSize[0] = 22;
 	mapSize[1] = 22;
-	beaconRange = 1000;
-	std::ifstream file2("origin.txt");
-	if (file2) {
+	// get map size
+	std::ifstream file("map/Room.wld");
+	if (file) {
 		std::string line;
-		std::getline(file2, line);
-		origin[0] = atoi(line.c_str());
-		std::getline(file2, line);
-		origin[1] = atoi(line.c_str());
-		std::getline(file2, line);
-		mapSize[0] = atoi(line.c_str());
-		std::getline(file2, line);
-		mapSize[1] = atoi(line.c_str());
-		std::getline(file2, line);
-		beaconRange = atoi(line.c_str());
+		while (std::getline(file, line)) {
+			if (VERBOSITY & 8)
+				printf(".");
+			std::vector<std::string> tokens;
+			if (Split(tokens, line, ' ')) {
+				if (tokens[0] == "MapSize") {
+					mapSize[0] = atoi(tokens[1].c_str()) * 100;
+					mapSize[1] = atoi(tokens[2].c_str()) * 100;
+				}
+			}
+		}
 	}
 
 	//initialize the random field 
@@ -360,10 +471,18 @@ Vect avoidObstacles(LaserProxy &lp) {
 Vect wander(Position2dProxy &pp) {
 	Vect result;
 	int xpos = floor(pp.GetXPos());
-	int ypos = floor(pp.GetYPos());
-	result.rho = 1.0 - 2 * wanderField[(xpos * mapSize[1] + ypos) * 2];
-	result.theta = (1.0 - 2 * wanderField[(xpos * mapSize[1] + ypos) * 2 + 1])
-			* PI - pp.GetYaw();
+	int ypos = -floor(pp.GetYPos());
+	if (xpos <= mapSize[0] && ypos <= mapSize[1] && xpos >= 0 && ypos >= 0) {
+		result.rho = 1.0 - 2 * wanderField[(xpos * mapSize[1] + ypos) * 2];
+		result.theta = (1.0 - 2 * wanderField[(xpos * mapSize[1] + ypos) * 2
+				+ 1]) * PI - pp.GetYaw();
+	} else {
+		if (VERBOSITY & 2)
+			printf("Warning: robot is lost, estimated position: %d	%d\n", xpos,
+					ypos);
+		result.rho = 0;
+		result.theta = 0;
+	}
 	if (VERBOSITY & 8)
 		printf("wander		%lf	%lf\n", result.rho, rtod(result.theta));
 	return result;
@@ -374,7 +493,7 @@ Vect goToBeacon(player_pose2d position) {
 
 	if (position.pa > 0) {
 		result.rho = 1.0;
-		result.theta = -position.px * PI / 2;
+		result.theta = -position.px * PI / 4;
 	}
 
 	if (VERBOSITY & 8)
@@ -389,8 +508,6 @@ Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV) {
 	} else {
 		result = avoidObstaclesV * 0 * 1.0 + wanderV * 0 * 0.2 + goToBeaconV
 				* 1.0;
-		if (VERBOSITY & 8)
-			printf("vectCombine	%lf	%lf\n", result.rho, rtod(result.theta));
 	}
 	if (VERBOSITY & 8)
 		printf("vectCombine	%lf	%lf\n", result.rho, rtod(result.theta));
@@ -426,3 +543,4 @@ Vect move(Vect combinedVect, Position2dProxy &pp) {
 		printf("move		%lf	%lf\n", result.rho, rtod(result.theta));
 	return result;
 }
+
