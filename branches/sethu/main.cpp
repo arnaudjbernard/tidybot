@@ -76,13 +76,13 @@ int main(int argc, char *argv[]) {
 				if (VERBOSITY & 1)
 					printf("Unknown mode, exiting.\n");
 				return -2;
-			}*/
+			}
 
 			if (VERBOSITY & 4)
 				printf(
 						"\nSetting robot speed to [speed, turnrate] = [%lf	%lf]\n",
 						newControl.rho, newControl.theta);
-			pp.SetSpeed(newControl.rho / 3, newControl.theta / 2);
+			pp.SetSpeed(newControl.rho / 3, newControl.theta / 2);*/
 		}
 	} catch (PlayerCc::PlayerError e) {
 		std::cerr << e << std::endl;
