@@ -1,9 +1,9 @@
 /*
-* ECE 8853 - Autonomous Control of Robotic Systems
-* Project - Tidybot
-* Sethu Madhav Bhattiprolu && Arnaud BERNARD
-* Spring 2010
-*/
+ * ECE 8853 - Autonomous Control of Robotic Systems
+ * Project - Tidybot
+ * Sethu Madhav Bhattiprolu && Arnaud BERNARD
+ * Spring 2010
+ */
 
 #ifndef DEF_MAIN_PROGRAM
 #define DEF_MAIN_PROGRAM
@@ -19,18 +19,15 @@
 #include <cxcore.h>
 #include <cvaux.h>
 #include <highgui.h>
-	
+
 #include "args.h"
 #include "Vect.hpp"
 
 #define RAYS			32
 #define SRAND_NB		5	// parameter for wander potential field
 #define PI				3.141592653	// parameter for wander potential field
-
 #define TR_SWITCH_MODE_3	30 //define how close the robot needs to be from the can to switch to mode 3
-
 using namespace PlayerCc;
-
 
 // functions definition
 void init();
@@ -41,16 +38,17 @@ Vect goToBeacon(player_pose2d position);
 Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV);
 Vect move(Vect combinedVect, Position2dProxy &pp);
 
-void computePosition(LaserProxy &lp, Position2dProxy &pp);
+void computePosition(LaserProxy &lp, Position2dProxy &pp,
+		Position2dProxy &pMCLp);
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp);
 Vect followPath(LaserProxy &lp, Position2dProxy &pp);
-Vect grabCan(LaserProxy &sp);
-Vect putDownCan();
+Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
+		Position2dProxy &pMCLp, ActArrayProxy &aa);
+Vect putDownCan(ActArrayProxy &aa);
 
 player_pose2d locateCan(const cv::Mat &imgClean);
 player_pose2d locateCan(LaserProxy &sp);
-
 
 // Global variables for convenient programming
 
@@ -81,8 +79,6 @@ int cam_width = 1;
 int cam_height = 1;
 int cam_depth = 3;
 
-
-
 int nbBeacons, beacons[100], origin[2];//Error if more than 100 beacons
 int mapSize[2], beaconRange;
 double *wanderField = NULL;
@@ -92,7 +88,5 @@ bool canSeen;
 //PID
 double error;
 double integral;
-
-
 
 #endif
