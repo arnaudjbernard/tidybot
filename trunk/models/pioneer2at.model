@@ -20,7 +20,7 @@
   <leftJoint>left_front_wheel_hinge</leftJoint>
   <rightJoint>right_front_wheel_hinge</rightJoint>
   <wheelSeparation>0.34</wheelSeparation>
-  <wheelDiameter>0.15</wheelDiameter>
+  <wheelDiameter>0.16</wheelDiameter>
   <torque>10.0</torque>
   <interface:position name="position_iface_0"/>
 </controller:differential_position2d>

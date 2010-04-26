@@ -25,7 +25,7 @@ Spring 2010
 	<logData>0</logData>
 
 	<physics:ode>
-		<stepTime>0.002</stepTime>
+		<stepTime>0.004</stepTime>
 		<gravity>0 0 -9.80665</gravity>
 		<cfm>1e-05</cfm>
 		<erp>0.3</erp>
@@ -134,96 +134,79 @@ Spring 2010
 		</body:map>
 	</model:physical>
 
-  <!--Dust Bin-->
+	<!--Dust Bin-->
 	<model:physical name="Bin_Base">
 		<xyz>-9.5 -9.5 0.01</xyz>
 		<rpy>0 0 0</rpy>
 		<static>1</static>
 		<body:box name="Bin_Body">
+			<xyz>-0 0 0.01</xyz>
+			<rpy>0 0 0</rpy>
 			<geom:box name="Bin_geom">
-			<size>0.32 .32 0.02</size>
-			<mass>0.01</mass>
-			<visual>
-				<mesh>unit_box</mesh>
-				<scale>0.32 0.32 0.02</scale>
-				<material>Gazebo/Grey</material>
+				<size>0.32 .32 0.02</size>
+				<mass>0.01</mass>
+				<visual>
+					<mesh>unit_box</mesh>
+					<scale>0.32 0.32 0.02</scale>
+					<material>Gazebo/Grey</material>
 				</visual>
 			</geom:box>
 		</body:box>
-
-    <model:physical name="Side1">
-		<xyz>-0.15 0 0.15</xyz>
-		<rpy>0 90 0</rpy>
-		<static>1</static>
-		<attach>
-				<parentBody>Bin_Body</parentBody>
-				<myBody>Side1_Body</myBody>
-			</attach>
 		<body:box name="Side1_Body">
+			<xyz>-0.15 0 0.15</xyz>
+			<rpy>0 90 0</rpy>
 			<geom:box name="Side1_geom">
-			<size>0.6 .3 0.02</size>
-			<mass>0.01</mass>
-			<visual>
-				<mesh>unit_box</mesh>
-				<scale>0.6 0.3 0.02</scale>
-				<material>Gazebo/Grey</material>
+				<size>0.4 .3 0.02</size>
+				<mass>0.01</mass>
+				<visual>
+					<mesh>unit_box</mesh>
+					<scale>0.4 0.3 0.02</scale>
+					<material>Gazebo/Grey</material>
 				</visual>
 			</geom:box>
 		</body:box>
-	</model:physical>
-
-	<model:physical name="Side2">
-		<xyz>0.15 0 0.15</xyz>
-		<rpy>0 90 0</rpy>
-		<static>1</static>
 		<body:box name="Side2_Body">
+			<xyz>0.15 0 0.15</xyz>
+			<rpy>0 90 0</rpy>
 			<geom:box name="Side2_geom">
-			<size>0.6 .3 0.02</size>
-			<mass>0.01</mass>
-			<visual>
-				<mesh>unit_box</mesh>
-				<scale>0.6 0.3 0.02</scale>
-				<material>Gazebo/Grey</material>
+				<size>0.4 .3 0.02</size>
+				<mass>0.01</mass>
+				<visual>
+					<mesh>unit_box</mesh>
+					<scale>0.4 0.3 0.02</scale>
+					<material>Gazebo/Grey</material>
 				</visual>
 			</geom:box>
 		</body:box>
-	</model:physical>
 
-	<model:physical name="Side3">
-		<xyz>0.0 -0.15 0.15</xyz>
-		<rpy>90 90 0</rpy>
-		<static>1</static>
 		<body:box name="Side3_Body">
+			<xyz>0.0 -0.15 0.15</xyz>
+			<rpy>90 90 0</rpy>
 			<geom:box name="Side3_geom">
-			<size>0.6 .3 0.02</size>
-			<mass>0.01</mass>
-			<visual>
-				<mesh>unit_box</mesh>
-				<scale>0.6 0.3 0.02</scale>
-				<material>Gazebo/Grey</material>
+				<size>0.4 .3 0.02</size>
+				<mass>0.01</mass>
+				<visual>
+					<mesh>unit_box</mesh>
+					<scale>0.4 0.3 0.02</scale>
+					<material>Gazebo/Grey</material>
 				</visual>
 			</geom:box>
 		</body:box>
-	</model:physical>
-
-	<model:physical name="Side4">
-		<xyz>0.0 0.15 0.15</xyz>
-		<rpy>90 90 0</rpy>
-		<static>1</static>
 		<body:box name="Side4_Body">
+			<xyz>0.0 0.15 0.15</xyz>
+			<rpy>90 90 0</rpy>
 			<geom:box name="Side4_geom">
-			<size>0.6 .3 0.02</size>
-			<mass>0.01</mass>
-			<visual>
-				<mesh>unit_box</mesh>
-				<scale>0.6 0.3 0.02</scale>
-				<material>Gazebo/Grey</material>
+				<size>0.4 .3 0.02</size>
+				<mass>0.01</mass>
+				<visual>
+					<mesh>unit_box</mesh>
+					<scale>0.4 0.3 0.02</scale>
+					<material>Gazebo/Grey</material>
 				</visual>
 			</geom:box>
 		</body:box>
 	</model:physical>
 		
-	</model:physical>
 
 
 	<!-- Small barrels for manipulation testing 
@@ -372,7 +355,7 @@ Spring 2010
 		</model:physical>
 
 		<model:physical name="filler">
-			<xyz>-0.04 0 0.06</xyz>
+			<xyz>-0.04 0 0.07</xyz>
 			<attach>
 				<parentBody>chassis_body</parentBody>
 				<myBody>filler_body</myBody>
@@ -392,7 +375,7 @@ Spring 2010
 
 		<!-- Laser range finder -->
 		<model:physical name="laser">
-			<xyz>-0.04 0 0.22</xyz>
+			<xyz>-0.04 0 0.23</xyz>
 			<attach>
 				<parentBody>chassis_body</parentBody>
 				<myBody>laser_body</myBody>

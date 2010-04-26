@@ -1,9 +1,11 @@
 #!/bin/bash
 
+killall playernav
+killall main
 killall player
 killall gazebo
-killall main
-gazebo Room.world >> /dev/null&
-player Player.cfg >> /dev/null&
+gazebo Room.world&
+player Player.cfg&
 sleep 3
+playernav&
 ./main
