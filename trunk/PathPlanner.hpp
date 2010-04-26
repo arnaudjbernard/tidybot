@@ -14,7 +14,7 @@
 #define SCALE 2
 
 //comment this line to disable OpenCv display
-//#define OPENCV
+#define OPENCV
 
 #include <stdio.h>
 #include <fstream>

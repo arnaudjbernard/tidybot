@@ -283,7 +283,7 @@ Spring 2010
 
 	<!-- Pioneer with attached arm -->
 	<model:physical name="pioneer2at_01">
-		<xyz>-9 -9 0.25</xyz>
+		<xyz>0 0 0.25</xyz>
 		<rpy>0.0 0.0 0.0</rpy>
 		
 		<!-- Pioneer 5-dof Arm -->
