@@ -44,10 +44,13 @@ int main(int argc, char *argv[])
 		//Move the arm out of sight
 		aa.MoveTo(0, -PI / 2);
 		sleep(2);
+		robot.Read();
 		aa.MoveTo(1, 0);
 		sleep(2);
+		robot.Read();
 		aa.MoveTo(2, -PI / 4);
 		sleep(2);
+		robot.Read();
 
 		
 		cam_width = cp.GetWidth();
@@ -77,7 +80,7 @@ int main(int argc, char *argv[])
 				break;
 			case 4://put down can
 				if(VERBOSITY & 8)printf("Putting down the can.\n");
-				newControl = putDownCan(aa);
+				newControl = putDownCan(robot, aa);
 				break;
 			default:
 				if(VERBOSITY & 1)printf("Unknown mode, exiting.\n");
@@ -132,17 +135,15 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 		}
 	}
 	std::pair<int, int> wayPoint = path[0];
-	while( std::pow(((float)wayPoint.first/100-(pMCLp.GetXPos()+mapSize[0]/2)),2) + std::pow(((float)wayPoint.second/100-(pMCLp.GetYPos()+mapSize[1]/2)),2) < 0.5)
+	while( std::pow(((float)wayPoint.first/100-(pMCLp.GetXPos()+(float)mapSize[0]/2)),2) + std::pow(((float)wayPoint.second/100-(pMCLp.GetYPos()+(float)mapSize[1]/2)),2) < 0.5)
 	//TODO eval the 0.5 influence and correct value
 	{
 	//if close enough to waypoint
 	//	suppress waypoint
 		if(VERBOSITY & 4)printf("Reached waypoint: 	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
-		printf("Reached waypoint: 	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
 		path.erase(path.begin());
 		wayPoint = path[0];
 		if(VERBOSITY & 4)printf("Going to waypoint:	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
-		printf("Going to waypoint:	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
 		if(path.empty())
 		{
 			mode = 4;
@@ -153,11 +154,12 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 	//goto next way point
 	Vect result;
 	result.rho = 1.0;
-	double dx = (float)wayPoint.first/100 - pMCLp.GetXPos()+mapSize[0]/2;
-	double dy = (float)wayPoint.second/100 - pMCLp.GetYPos()+mapSize[1]/2;
+	double dx = (float)wayPoint.first/100 - pMCLp.GetXPos()-(float)mapSize[0]/2;
+	double dy = (float)wayPoint.second/100 - pMCLp.GetYPos()-(float)mapSize[1]/2;
 	result.theta = 2*atan(dy/(dx+sqrt(pow(dx,2)+pow(dy,2)))) - pMCLp.GetYaw();
 	result.rho = cos(result.theta) > 0 ? result.rho * cos(result.theta) : 0;
-	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho, rtod(result.theta));
+	if(VERBOSITY & 4)printf("At	[%lf	%lf] going to [%f	%f]\n",pMCLp.GetXPos()+(float)mapSize[0]/2, pMCLp.GetYPos()+(float)mapSize[1]/2, (float)wayPoint.first/100, (float)wayPoint.second/100);
+	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho/3, rtod(result.theta));
 	return result;
 }
 
@@ -187,6 +189,7 @@ Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
 	double min_angle;
 
 	while (1) {
+		robot.Read();
 		min_range = min(sp.GetMinLeft(), sp.GetMinRight());
 		for (int i = 0; i < sp.GetCount(); i++) {
 			if (sp.GetRange(i) == min_range)
@@ -209,6 +212,7 @@ Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
 	sleep(2);
 
 	while (min_range >= 0.36 || min_range <= 0.34) {
+		robot.Read();
 
 		pp.SetSpeed(min_range - 0.35, 0);
 		robot.Read();
@@ -223,46 +227,57 @@ Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
 	aa.MoveTo(0, 0);
 
 	sleep(2);
+	robot.Read();
 
 	//open Gripper
 	aa.MoveTo(5, -1);
 	aa.MoveTo(6, 1);
 
 	sleep(2);
+	robot.Read();
 
 	aa.MoveTo(4, -1.57);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(2, -0.78);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(1, -0.78);
 	sleep(2);
+	robot.Read();
 	//Move Forward
 
 	pp.SetSpeed((min_range - 0.1) * 0.25, 0);
 	sleep(2);
+	robot.Read();
 	pp.SetSpeed(0, 0);
 
 	//Grip the Can
 	aa.MoveTo(5, 0);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(6, 0);
 	sleep(2);
+	robot.Read();
 
 	//Go To Home Position
 
 
 	aa.MoveTo(2, -PI / 4);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(1, 0);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(0, -PI / 2);
 	sleep(2);
+	robot.Read();
 
 	mode = 2;
 	return Vect(0, 0);
 }
 
-Vect putDownCan(ActArrayProxy &aa) {
+Vect putDownCan(PlayerClient &robot, ActArrayProxy &aa) {
 
   /*
 	aa.MoveTo(4, -1.57);
@@ -276,27 +291,36 @@ Vect putDownCan(ActArrayProxy &aa) {
 
 	aa.MoveTo(1,PI/3);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(2,-PI/6);
 	sleep(2);	
+	robot.Read();
 	aa.MoveTo(4,PI/4);
 	sleep(2);	
+	robot.Read();
 	aa.MoveTo(0,0);
 	sleep(2);	
+	robot.Read();
 
 
 	//open Gripper
 	aa.MoveTo(5, -1);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(6, 1);
 	sleep(2);
-
+	robot.Read();
+	
 	//Go To Home Position
 	aa.MoveTo(2, -PI / 4);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(1, 0);
 	sleep(2);
+	robot.Read();
 	aa.MoveTo(0, -PI / 2);
 	sleep(2);
+	robot.Read();
 
 	mode = 1;
 	return Vect(0, 0);
@@ -469,6 +493,7 @@ void init()
 			}
 		}
 	}
+	if(VERBOSITY & 2)printf("MapSize: %dx%d\n",mapSize[0], mapSize[1]);
 	
 	//initialize the random field 
 	srand(SRAND_NB); // initialize C random number generator, SRAND_NB will determine the field topology

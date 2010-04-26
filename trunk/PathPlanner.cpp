@@ -29,7 +29,24 @@ std::vector<std::pair<int, int> > PathPlanner::getWayPoints(std::pair<int, int> 
 	originY = origin.second;
 	goalX = goal.first;
 	goalY = goal.second;
-	if(VERBOSITY & 4)printf("Computing waypoints form [%d	%d] to [%d	%d].\n", originX, originY, goalX, goalY);
+	if(VERBOSITY & 2)printf("Computing waypoints form [%d	%d] to [%d	%d].\n", originX, originY, goalX, goalY);
+	if(map[mapW*originY + originX] == 1)
+	{
+		if(VERBOSITY & 2)printf("Origin [%d	%d] out of bound, calculating closest inbound point.\n", originX, originY);
+		std::pair<int, int> newOrigin = findInbound(origin);
+		originX = newOrigin.first;
+		originY = newOrigin.second;
+		if(VERBOSITY & 4)printf("New origin set to [%d	%d].\n", originX, originY);
+	}
+	if(map[mapW*goalY + goalX] == 1)
+	{
+		if(VERBOSITY & 2)printf("Goal [%d	%d] out of bound, calculating closest inbound point.\n", goalX, goalY);
+		std::pair<int, int> newGoal = findInbound(goal);
+		goalX = newGoal.first;
+		goalY = newGoal.second;
+		if(VERBOSITY & 4)printf("New goal set to [%d	%d].\n", goalX, goalY);
+	}
+	if(VERBOSITY & 2)printf("Computing waypoints form [%d	%d] to [%d	%d].\n", originX, originY, goalX, goalY);
 	createVisibilityGraph();
 	applyAStar();
 	result = displayResult();
@@ -37,6 +54,56 @@ std::vector<std::pair<int, int> > PathPlanner::getWayPoints(std::pair<int, int> 
 	if(VERBOSITY & 1)printf("Select a display window and press any key to exit.\n");
 	cv::waitKey(0);
 #endif
+	return result;
+}
+
+std::pair<int, int> PathPlanner::findInbound(std::pair<int, int> point)
+{
+	std::pair<int, int> result(point.first, point.second);
+	int radius, x, y;
+	for(radius = 0; radius < mapH; radius++)
+	{
+		y = -radius;
+		for(x = -radius; x <= radius; x++)
+		{
+			if(map[mapW*(point.second + y) + (point.first + x)] == 0)
+			{
+				result.first = point.first + x;
+				result.second = point.second + y;
+				return result;
+			}
+		}
+		x = radius;
+		for(y = -radius; y <= radius; y++)
+		{
+			if(map[mapW*(point.second + y) + (point.first + x)] == 0)
+			{
+				result.first = point.first + x;
+				result.second = point.second + y;
+				return result;
+			}
+		}
+		y = radius;
+		for(x = radius; x >= -radius; x--)
+		{
+			if(map[mapW*(point.second + y) + (point.first + x)] == 0)
+			{
+				result.first = point.first + x;
+				result.second = point.second + y;
+				return result;
+			}
+		}
+		x = -radius;
+		for(y = radius; y > -radius; y--)
+		{
+			if(map[mapW*(point.second + y) + (point.first + x)] == 0)
+			{
+				result.first = point.first + x;
+				result.second = point.second + y;
+				return result;
+			}
+		}
+	}
 	return result;
 }
 
@@ -357,18 +424,18 @@ std::vector<std::pair<int, int> > PathPlanner::displayResult()
 	if(VERBOSITY & 8)printf("\n");
 	if(VERBOSITY & 8)printf("\n");
 	
-	if(VERBOSITY & 4)printf("Waypoints from start to goal in .wld file dimensions (x, y):\n");
-	if(VERBOSITY & 4)printf("[%0.2f, %0.2f]",((float)currentNode->x)/100,((float)currentNode->y)/100);
+	if(VERBOSITY & 2)printf("Waypoints from start to goal in .wld file dimensions (x, y):\n");
+	if(VERBOSITY & 2)printf("[%0.2f, %0.2f]",((float)currentNode->x)/100,((float)currentNode->y)/100);
 	result.push_back(std::pair<int, int>(currentNode->x,currentNode->y));
 	//note: it would be actually more convenient to set result in reverse order to use pop back in main
 	while(currentNode->parent)
 	{
 		currentNode = currentNode->parent;
-		if(VERBOSITY & 4)printf("	[%0.2f, %0.2f]",((float)currentNode->x)/100,((float)currentNode->y)/100);
+		if(VERBOSITY & 2)printf("	[%0.2f, %0.2f]",((float)currentNode->x)/100,((float)currentNode->y)/100);
 		result.push_back(std::pair<int, int>(currentNode->x,currentNode->y));
 	}
-	if(VERBOSITY & 4)printf("\n");
-	if(VERBOSITY & 4)printf("\n");
+	if(VERBOSITY & 2)printf("\n");
+	if(VERBOSITY & 2)printf("\n");
 #ifdef OPENCV
 	cv::Mat imgSolR;
 	cv::resize(imgSolD, imgSolR, cv::Size(mapW/SCALE,mapH/SCALE));

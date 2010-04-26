@@ -1,7 +1,7 @@
 # Makefile for Tidybot
 #g++ -o main main.cpp Vect.cpp `pkg-config opencv playerc++ --cflags --libs`
 
-.PHONY: clean mrproper map
+.PHONY: clean mrproper map start
 .SUFFIXES: .o .cpp
 CXX =g++
 CXXFLAGS =-c `pkg-config --cflags opencv playerc++`# -g
@@ -40,3 +40,6 @@ mrproper: clean
 
 clean:
 	rm -f $(EXECUTABLE) *.o
+	
+start: all
+	./run
