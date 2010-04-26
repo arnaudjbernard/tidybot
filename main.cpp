@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 
 		//Set the initial Position for the MCL
 		// this should match the actual position of the robot in the file Room.world
-		double initialPose[] = {0, 0, 0.25};
-		double covariance[]  = {0.2, 0.2, 0.27};
+		double initialPose[] = {-1, -1, 0.25};
+		double covariance[]  = {0.02, 0.02, 0.027};
 		LocalP.SetPose(initialPose,covariance);
 		
 		robot.Read();
@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
 		{
 			robot.Read(); // 10Hz by default
 
-			computePosition(lp, pp, pMCLp);
 
 			switch(mode)
 			{
@@ -80,15 +79,18 @@ int main(int argc, char *argv[])
 				break;
 			case 4://put down can
 				if(VERBOSITY & 8)printf("Putting down the can.\n");
-				newControl = putDownCan(robot, aa);
+				newControl = putDownCan(robot, aa, pMCLp, pp);
 				break;
 			default:
 				if(VERBOSITY & 1)printf("Unknown mode, exiting.\n");
 				return -2;
 			}
 			
+			computePosition(lp, pp, pMCLp);
+			
 			if(VERBOSITY & 4)printf("Setting robot speed to [speed, turnrate] = [%lf	%lf]\n\n",newControl.rho, newControl.theta);
 			pp.SetSpeed(newControl.rho, newControl.theta);
+			cv::waitKey(10);
 		}
 	}
 	catch (PlayerCc::PlayerError e)
@@ -126,8 +128,8 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 	
 	if(path.empty())
 	{
-		//TODO switch coke and sprite
-		path = pathPlanner.getWayPoints(std::pair<int, int>((int)((pMCLp.GetXPos()+mapSize[0]/2)*100), (int)((pMCLp.GetYPos()+mapSize[1]/2)*100)), std::pair<int, int>(250, 250));
+		//TODO switch coke and sprite -> two trash cans
+		path = pathPlanner.getWayPoints(std::pair<int, int>((int)((pMCLp.GetXPos()+mapSize[0]/2)*100), (int)((pMCLp.GetYPos()+mapSize[1]/2)*100)), std::pair<int, int>(60, 60));
 		if(path.empty())
 		{
 			if(VERBOSITY & 1)printf("No path found, going down!\n");
@@ -135,7 +137,7 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 		}
 	}
 	std::pair<int, int> wayPoint = path[0];
-	while( std::pow(((float)wayPoint.first/100-(pMCLp.GetXPos()+(float)mapSize[0]/2)),2) + std::pow(((float)wayPoint.second/100-(pMCLp.GetYPos()+(float)mapSize[1]/2)),2) < 0.5)
+	while( std::pow(((float)wayPoint.first/100-(pMCLp.GetXPos()+(float)mapSize[0]/2)),2) + std::pow(((float)wayPoint.second/100-(pMCLp.GetYPos()+(float)mapSize[1]/2)),2) < 0.05)
 	//TODO eval the 0.5 influence and correct value
 	{
 	//if close enough to waypoint
@@ -158,8 +160,10 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 	double dy = (float)wayPoint.second/100 - pMCLp.GetYPos()-(float)mapSize[1]/2;
 	result.theta = 2*atan(dy/(dx+sqrt(pow(dx,2)+pow(dy,2)))) - pMCLp.GetYaw();
 	result.rho = cos(result.theta) > 0 ? result.rho * cos(result.theta) : 0;
+	result.rho /= 4;
+	result.theta /= 2;
 	if(VERBOSITY & 4)printf("At	[%lf	%lf] going to [%f	%f]\n",pMCLp.GetXPos()+(float)mapSize[0]/2, pMCLp.GetYPos()+(float)mapSize[1]/2, (float)wayPoint.first/100, (float)wayPoint.second/100);
-	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho/3, rtod(result.theta));
+	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
 }
 
@@ -277,7 +281,8 @@ Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
 	return Vect(0, 0);
 }
 
-Vect putDownCan(PlayerClient &robot, ActArrayProxy &aa) {
+Vect putDownCan(PlayerClient &robot, ActArrayProxy &aa, Position2dProxy &pMCLp, Position2dProxy &pp)
+{
 
   /*
 	aa.MoveTo(4, -1.57);
@@ -312,17 +317,33 @@ Vect putDownCan(PlayerClient &robot, ActArrayProxy &aa) {
 	robot.Read();
 	
 	//Go To Home Position
+	aa.MoveTo(0, -PI / 2);
+	sleep(2);
 	aa.MoveTo(2, -PI / 4);
 	sleep(2);
 	robot.Read();
 	aa.MoveTo(1, 0);
 	sleep(2);
 	robot.Read();
-	aa.MoveTo(0, -PI / 2);
-	sleep(2);
 	robot.Read();
 
 	mode = 1;
+	
+	//step back
+	pp.SetSpeed(-0.2, 0);
+	sleep(2);
+
+	//turn around
+	double ang = pMCLp.GetYaw();
+	while (pMCLp.GetYaw() > ang-PI + 0.1 && pMCLp.GetYaw() < ang + PI - 0.1)
+	{
+		printf("%lf	%lf	%lf	%lf\n",pMCLp.GetYaw() , ang-PI , pMCLp.GetYaw() , ang + PI);
+		robot.Read();
+		pp.SetSpeed(0, -0.5);
+		sleep(0.01);
+	}
+	pp.SetSpeed(0, 0);
+	
 	return Vect(0, 0);
 }
 
@@ -436,7 +457,6 @@ player_pose2d locateCan(const cv::Mat &imgClean)
 	
 	cv::imshow("ellipse", img);
 	
-	cv::waitKey(10);
 	
 	return canPosition;
 }
