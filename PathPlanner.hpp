@@ -14,7 +14,7 @@
 #define SCALE 2
 
 //comment this line to disable OpenCv display
-#define OPENCV
+//#define OPENCV
 
 #include <stdio.h>
 #include <fstream>
@@ -68,6 +68,7 @@ protected:
 	void createVisibilityGraph();
 	void applyAStar();
 	std::vector<std::pair<int, int> > displayResult();
+	std::pair<int, int> findInbound(std::pair<int, int> point);
 
 
 	bool * map;
