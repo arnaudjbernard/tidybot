@@ -29,9 +29,17 @@ int main(int argc, char *argv[])
 
 		//Set the initial Position for the MCL
 		// this should match the actual position of the robot in the file Room.world
-		double initialPose[] = {1.5, 1.5, 0.25};
+		double initialPose[] = {0, 0, 0.25};
 		double covariance[]  = {0.2, 0.2, 0.27};
 		LocalP.SetPose(initialPose,covariance);
+		
+		robot.Read();
+		
+		if(!cp.GetImageSize())
+		{
+			if(VERBOSITY & 1)printf("Webcam is not working.\n");
+			return 1;
+		}
 		
 		//Move the arm out of sight
 		aa.MoveTo(0, -PI / 2);
@@ -41,13 +49,6 @@ int main(int argc, char *argv[])
 		aa.MoveTo(2, -PI / 4);
 		sleep(2);
 
-		robot.Read();
-		
-		if(!cp.GetImageSize())
-		{
-			if(VERBOSITY & 1)printf("Webcam is not working.\n");
-			return 1;
-		}
 		
 		cam_width = cp.GetWidth();
 		cam_height = cp.GetHeight();
@@ -101,7 +102,7 @@ void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp
 	if(VERBOSITY & 4)printf("Computed position from the MCL: [%lf	%lf	%lf]\n",pMCLp.GetXPos(), pMCLp.GetYPos(), rtod(pMCLp.GetYaw()));
 }
 
-Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
+Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pMCLp)
 {
 	uint8_t *imgBuffer = new uint8_t[cam_width * cam_height * cam_depth];
 	cv::Mat imgClean(cam_height,cam_width, CV_8UC3, imgBuffer);
@@ -112,17 +113,18 @@ Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp)
 	if(VERBOSITY & 8)printf("Vector		rho		theta\n");
 	if(VERBOSITY & 8)printf("---------------------------------------------------\n");
 	
-	Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pp), goToBeacon(position)), pp);
+	Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pMCLp), goToBeacon(position)), pMCLp);
 
 	return Vect(newControl.rho/3, newControl.theta/2);
 }
 
-Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner)
+Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner)
 {
-	//TODO
+	
 	if(path.empty())
 	{
-		path = pathPlanner.getWayPoints(std::pair<int, int>(pp.GetXPos()*100, pp.GetYPos()*100), std::pair<int, int>(1900, 1900));
+		//TODO switch coke and sprite
+		path = pathPlanner.getWayPoints(std::pair<int, int>((int)((pMCLp.GetXPos()+mapSize[0]/2)*100), (int)((pMCLp.GetYPos()+mapSize[1]/2)*100)), std::pair<int, int>(250, 250));
 		if(path.empty())
 		{
 			if(VERBOSITY & 1)printf("No path found, going down!\n");
@@ -130,7 +132,7 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner)
 		}
 	}
 	std::pair<int, int> wayPoint = path[0];
-	while( std::pow(((float)wayPoint.first/100-pp.GetXPos()),2) + std::pow(((float)wayPoint.second/100-pp.GetYPos()),2) < 0.5)
+	while( std::pow(((float)wayPoint.first/100-(pMCLp.GetXPos()+mapSize[0]/2)),2) + std::pow(((float)wayPoint.second/100-(pMCLp.GetYPos()+mapSize[1]/2)),2) < 0.5)
 	//TODO eval the 0.5 influence and correct value
 	{
 	//if close enough to waypoint
@@ -151,9 +153,9 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner)
 	//goto next way point
 	Vect result;
 	result.rho = 1.0;
-	double dx = (float)wayPoint.first/100 - pp.GetXPos();
-	double dy = (float)wayPoint.second/100 - pp.GetYPos();
-	result.theta = 2*atan(dy/(dx+sqrt(pow(dx,2)+pow(dy,2)))) - pp.GetYaw();
+	double dx = (float)wayPoint.first/100 - pMCLp.GetXPos()+mapSize[0]/2;
+	double dy = (float)wayPoint.second/100 - pMCLp.GetYPos()+mapSize[1]/2;
+	result.theta = 2*atan(dy/(dx+sqrt(pow(dx,2)+pow(dy,2)))) - pMCLp.GetYaw();
 	result.rho = cos(result.theta) > 0 ? result.rho * cos(result.theta) : 0;
 	if(VERBOSITY & 8)printf("move		%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
@@ -461,8 +463,8 @@ void init()
 			{
 				if(tokens[0] == "MapSize")
 				{
-					mapSize[0] = atoi(tokens[1].c_str())*100;
-					mapSize[1] = atoi(tokens[2].c_str())*100;
+					mapSize[0] = atoi(tokens[1].c_str());
+					mapSize[1] = atoi(tokens[2].c_str());
 				}
 			}
 		}
@@ -506,15 +508,15 @@ Vect avoidObstacles(LaserProxy &lp)
 	return result;
 }
 
-Vect wander(Position2dProxy &pp)
+Vect wander(Position2dProxy &pMCLp)
 {
 	Vect result;
-	int xpos = floor(pp.GetXPos());
-	int ypos = -floor(pp.GetYPos());
+	int xpos = floor(pMCLp.GetXPos()+mapSize[0]/2);
+	int ypos = -floor(pMCLp.GetYPos()+mapSize[1]/2);
 	if( xpos <= mapSize[0] && ypos <= mapSize[1] && xpos >= 0 && ypos >= 0)
 	{
 		result.rho = 1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 ];
-		result.theta = (1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 + 1]) * PI - pp.GetYaw();
+		result.theta = (1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 + 1]) * PI - pMCLp.GetYaw();
 	}
 	else
 	{
@@ -555,7 +557,7 @@ Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV)
 	return result;
 }
 
-Vect move(Vect combinedVect, Position2dProxy &pp)
+Vect move(Vect combinedVect, Position2dProxy &pMCLp)
 {
 	////PID
 
