@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 		LaserProxy sp(&robot,1);
 		LocalizeProxy LocalP(&robot, 0);
 		Position2dProxy pMCLp(&robot,1);
+		ActArrayProxy aa(&robot, 0);
 
 	
 		pp.SetMotorEnable(true);
@@ -28,13 +29,20 @@ int main(int argc, char *argv[])
 
 		//Set the initial Position for the MCL
 		// this should match the actual position of the robot in the file Room.world
-		double initialPose[] = {1.5, 1.5, 0};
+		double initialPose[] = {-9, -9, 0.25};
 		double covariance[]  = {0.2, 0.2, 0.27};
 		LocalP.SetPose(initialPose,covariance);
 		
-		//TODO: Sethu move the arm out of sight
-		
+		//Move the arm out of sight
+		aa.MoveTo(0, -PI / 2);
+		sleep(2);
+		aa.MoveTo(1, 0);
+		sleep(2);
+		aa.MoveTo(2, -PI / 4);
+		sleep(2);
+
 		robot.Read();
+		
 		if(!cp.GetImageSize())
 		{
 			if(VERBOSITY & 1)printf("Webcam is not working.\n");
@@ -64,11 +72,11 @@ int main(int argc, char *argv[])
 				break;
 			case 3://grab can
 				if(VERBOSITY & 8)printf("Grabbing the can.\n");
-				newControl = grabCan(sp);
+				newControl = grabCan(robot, sp, pp, pMCLp, aa);
 				break;
 			case 4://put down can
 				if(VERBOSITY & 8)printf("Putting down the can.\n");
-				newControl = putDownCan();
+				newControl = putDownCan(aa);
 				break;
 			default:
 				if(VERBOSITY & 1)printf("Unknown mode, exiting.\n");
@@ -151,25 +159,135 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner)
 	return result;
 }
 
-Vect grabCan(LaserProxy &sp)
-{
+Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
+		Position2dProxy &pMCLp, ActArrayProxy &aa) {
+	int robot_x, robot_y;
 	player_pose2d position = locateCan(sp);
-	if(position.pa < 0)
-	{
-		if(VERBOSITY & 2)printf("Cannot find the can with sonar, restart looking for it.\n");
-		mode = 1;
-		return Vect(0,0);
+	 if(position.pa < 0)
+	 {
+	 if(VERBOSITY & 2)printf("Cannot find the can with sonar, restart looking for it.\n");
+	 mode = 1;
+	 return Vect(0,0);
+	 }
+
+	//Stop the Robot
+	pp.SetSpeed(0, 0);
+
+	if (VERBOSITY & 8)
+		printf("\n In Grab Can .....\n\n");
+	//Get my position
+	robot_x = pMCLp.GetXPos();
+	robot_y = pMCLp.GetYPos();
+
+	//Get the Can position from the laser
+	//Get the min Range
+	double min_range;
+	double min_angle;
+
+	while (1) {
+		min_range = min(sp.GetMinLeft(), sp.GetMinRight());
+		for (int i = 0; i < sp.GetCount(); i++) {
+			if (sp.GetRange(i) == min_range)
+				min_angle = sp.GetMinAngle() + sp.GetScanRes() * i;
+		}
+
+		//turn to move min_angle to zero..
+		if (min_angle < 0.01 && min_angle > -0.01) {
+			pp.SetSpeed(0, 0);
+			break;
+		} else {
+			pp.SetSpeed(0, min_angle);
+			if (min_range == 0.7)
+				break;
+
+		}
+		robot.Read();
+
 	}
-	//Sethu's grabbing code (position)
+	sleep(2);
+
+	while (min_range >= 0.36 || min_range <= 0.34) {
+
+		pp.SetSpeed(min_range - 0.35, 0);
+		robot.Read();
+		min_range = min(sp.GetMinLeft(), sp.GetMinRight());
+		if (min_range == 0.7)
+			break;
+	}
+
+	pp.SetSpeed(0, 0);
+
+	aa.MoveTo(2, 0);
+	aa.MoveTo(0, 0);
+
+	sleep(2);
+
+	//open Gripper
+	aa.MoveTo(5, -1);
+	aa.MoveTo(6, 1);
+
+	sleep(2);
+
+	aa.MoveTo(4, -1.57);
+	sleep(2);
+	aa.MoveTo(2, -0.78);
+	sleep(2);
+	aa.MoveTo(1, -0.78);
+	sleep(2);
+	//Move Forward
+
+	pp.SetSpeed((min_range - 0.1) * 0.25, 0);
+	sleep(2);
+	pp.SetSpeed(0, 0);
+
+	//Grip the Can
+	aa.MoveTo(5, 0);
+	sleep(2);
+	aa.MoveTo(6, 0);
+	sleep(2);
+
+	//Go To Home Position
+
+
+	aa.MoveTo(2, -PI / 4);
+	sleep(2);
+	aa.MoveTo(1, 0);
+	sleep(2);
+	aa.MoveTo(0, -PI / 2);
+	sleep(2);
+
 	mode = 2;
-	return Vect(0,0);
+	return Vect(0, 0);
 }
 
-Vect putDownCan()
-{
-	//Sethu's dropping code
+Vect putDownCan(ActArrayProxy &aa) {
+
+	aa.MoveTo(4, -1.57);
+	sleep(2);
+	aa.MoveTo(0, 0);
+	sleep(2);
+	aa.MoveTo(1, -0.78);
+	sleep(2);
+	aa.MoveTo(2, -0.78);
+	sleep(2);
+
+
+	//open Gripper
+	aa.MoveTo(5, -1);
+	sleep(2);
+	aa.MoveTo(6, 1);
+	sleep(2);
+
+	//Go To Home Position
+	aa.MoveTo(2, -PI / 4);
+	sleep(2);
+	aa.MoveTo(1, 0);
+	sleep(2);
+	aa.MoveTo(0, -PI / 2);
+	sleep(2);
+
 	mode = 1;
-	return Vect(0,0);
+	return Vect(0, 0);
 }
 
 player_pose2d locateCan(const cv::Mat &imgClean)

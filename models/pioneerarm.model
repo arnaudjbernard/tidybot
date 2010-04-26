@@ -167,12 +167,12 @@
     <xyz> 0.45825 -0.01060  0.07200</xyz>
     <rpy> 0.00000  0.00000  0.00000</rpy>
     <geom:box name="right_gripper_geom">
-      <size>0.05600 0.02120 0.00500</size>
+      <size>0.1120 0.02120 0.0300</size>
       <mass>0.05</mass>
       <visual>
         <xyz>  0.00000  0.00000  0.00000</xyz>
         <rpy>180.00000  0.00000  0.00000</rpy>
-        <scale>0.001    0.001    0.001</scale>
+        <scale>0.002    0.001    0.006</scale>
         <mesh>PioneerArm/Gripper.mesh</mesh>
         <material>Gazebo/Grey</material>
       </visual>
@@ -183,12 +183,12 @@
     <xyz> 0.45825 +0.01060  0.07200</xyz>
     <rpy> 0.00000  0.00000  0.00000</rpy>
     <geom:box name="left_gripper_geom">
-      <size>0.05600 0.02120 0.00500</size>
+      <size>0.1120 0.02120 0.0300</size>
       <mass>0.05</mass>
       <visual>
         <xyz>  0.00000  0.00000  0.00000</xyz>
         <rpy>  0.00000  0.00000  0.00000</rpy>
-        <scale>0.001    0.001    0.001</scale>
+        <scale>0.002    0.001    0.006</scale>
         <mesh>PioneerArm/Gripper.mesh</mesh>
         <material>Gazebo/Grey</material>
       </visual>
@@ -202,7 +202,7 @@
     <anchorOffset>0 0 0</anchorOffset>
     <axis>0 1 0</axis>
     <lowStop>0.0</lowStop>
-    <highStop>+0.026</highStop>
+    <highStop>+0.05</highStop>
     <erp>0.3</erp>
     <cfm>10e-5</cfm>
   </joint:slider>
@@ -213,7 +213,7 @@
     <anchor>link5_body</anchor>
     <anchorOffset>0 0 0</anchorOffset>
     <axis>0 1 0</axis>
-    <lowStop>-0.026</lowStop>
+    <lowStop>-0.05</lowStop>
     <highStop>0.0</highStop>
     <erp>0.3</erp>
     <cfm>10e-5</cfm>
