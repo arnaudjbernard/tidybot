@@ -63,9 +63,9 @@ void computePosition(LaserProxy &lp, Position2dProxy &pp, Position2dProxy &pMCLp
 
 Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pp);
 Vect followPath(LaserProxy &lp, Position2dProxy &pp, PathPlanner &pathPlanner);
-Vect grabCan(LaserProxy &sp);
-Vect putDownCan();
-
+Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
+		Position2dProxy &pMCLp, ActArrayProxy &aa);
+Vect putDownCan(ActArrayProxy &aa);
 player_pose2d locateCan(const cv::Mat &imgClean);
 player_pose2d locateCan(LaserProxy &sp);
 
