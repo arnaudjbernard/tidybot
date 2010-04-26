@@ -262,6 +262,7 @@ Vect grabCan(PlayerClient &robot, LaserProxy &sp, Position2dProxy &pp,
 
 Vect putDownCan(ActArrayProxy &aa) {
 
+  /*
 	aa.MoveTo(4, -1.57);
 	sleep(2);
 	aa.MoveTo(0, 0);
@@ -269,7 +270,16 @@ Vect putDownCan(ActArrayProxy &aa) {
 	aa.MoveTo(1, -0.78);
 	sleep(2);
 	aa.MoveTo(2, -0.78);
+	sleep(2);*/
+
+	aa.MoveTo(1,PI/3);
 	sleep(2);
+	aa.MoveTo(2,-PI/6);
+	sleep(2);	
+	aa.MoveTo(4,PI/4);
+	sleep(2);	
+	aa.MoveTo(0,0);
+	sleep(2);	
 
 
 	//open Gripper
