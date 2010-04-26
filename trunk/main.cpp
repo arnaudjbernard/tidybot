@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
 		//Set the initial Position for the MCL
 		// this should match the actual position of the robot in the file Room.world
-		double initialPose[] = {-9, -9, 0.25};
+		double initialPose[] = {1.5, 1.5, 0.25};
 		double covariance[]  = {0.2, 0.2, 0.27};
 		LocalP.SetPose(initialPose,covariance);
 		
