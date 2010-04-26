@@ -10,7 +10,7 @@ SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=main
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(SOURCES) $(EXECUTABLE) map
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@

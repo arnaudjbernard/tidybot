@@ -512,7 +512,7 @@ Vect wander(Position2dProxy &pMCLp)
 {
 	Vect result;
 	int xpos = floor(pMCLp.GetXPos()+mapSize[0]/2);
-	int ypos = -floor(pMCLp.GetYPos()+mapSize[1]/2);
+	int ypos = floor(pMCLp.GetYPos()+mapSize[1]/2);
 	if( xpos <= mapSize[0] && ypos <= mapSize[1] && xpos >= 0 && ypos >= 0)
 	{
 		result.rho = 1.0 - 2 * wanderField[ (xpos * mapSize[1] + ypos) * 2 ];
