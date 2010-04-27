@@ -599,7 +599,7 @@ Vect vectCombine(Vect avoidObstaclesV, Vect wanderV, Vect goToBeaconV)
 	}
 	else
 	{
-		result = avoidObstaclesV * 0*1.0 + wanderV *0* 0.2 + goToBeaconV * 1.0;
+		result = avoidObstaclesV * 0.5 + wanderV *0* 0.2 + goToBeaconV * 1.0;
 	}
 	if(VERBOSITY & 8)printf("vectCombine	%lf	%lf\n",result.rho, rtod(result.theta));
 	return result;
