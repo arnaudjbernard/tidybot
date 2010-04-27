@@ -2,8 +2,8 @@ Obstacle 3 6 1 11
 Obstacle 11 0 1 6
 Obstacle 4 12 9 2
 Obstacle 12 12 1 6
-Obstacle 16 5 2 2
-Obstacle 17 15 1 1
+Obstacle 16 5 2 3
+Obstacle 17 13 1 3
 Obstacle 10 5 1 1
 Obstacle 7 21 1 1
 MapSize 22 22

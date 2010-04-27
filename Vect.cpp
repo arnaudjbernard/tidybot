@@ -19,6 +19,14 @@ Vect::Vect(double rho, double theta)
 	this->theta = theta;
 }
 
+void Vect::norm()
+{
+	while(this->theta > PI)
+		this->theta -= 2*PI;
+	while(this->theta <= -PI)
+		this->theta += 2*PI;
+}
+
 Vect::Vect Vect::operator+(const Vect &vect)
 {
 	Vect result;

@@ -52,7 +52,7 @@ std::vector<std::pair<int, int> > PathPlanner::getWayPoints(std::pair<int, int> 
 	result = displayResult();
 #ifdef OPENCV
 	if(VERBOSITY & 1)printf("Select a display window and press any key to exit.\n");
-	cv::waitKey(0);
+	cv::waitKey(100);
 #endif
 	return result;
 }
@@ -283,7 +283,7 @@ void PathPlanner::createVisibilityGraph()
 	cv::resize(imgVis, imgVisR, cv::Size(mapW/SCALE,mapH/SCALE));
 	cv::imshow("imgVis", imgVisR);
 	imgVis.copyTo(imgSol);
-	cv::waitKey(300);
+	cv::waitKey(100);
 #endif
 	if(VERBOSITY & 4)printf("\n");
 }
@@ -323,7 +323,7 @@ void PathPlanner::applyAStar()
 		cv::Mat imgVisR;
 		cv::resize(imgVisD, imgVisR, cv::Size(mapW/SCALE,mapH/SCALE));
 		cv::imshow("imgVis", imgVisR);
-		cv::waitKey(200);
+		cv::waitKey(100);
 #endif
 		
 		if(currentNode == goalNode)

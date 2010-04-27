@@ -10,6 +10,10 @@
 #ifndef DEF_CLASS_VECT
 #define DEF_CLASS_VECT
 
+#ifndef PI
+#define PI				3.141592653
+#endif
+
 #include <cmath>
 
 class Vect
@@ -21,6 +25,8 @@ public:
 	Vect();
 	
 	Vect(double rho, double theta);
+
+	void norm();
 	
 	Vect operator+(const Vect &vect);
 	
