@@ -30,7 +30,7 @@ Node.o: Node.cpp Node.hpp
 
 map:
 	python map/convert.py
-	python map/convertL.py*
+	python map/convertL.py
 
 texture:
 	python gazebo/textures.py
