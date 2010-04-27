@@ -11,7 +11,7 @@
 #define DEF_CLASS_PATH_PLANNER
 
 
-#define SCALE 2
+#define SCALE 3
 
 //comment this line to disable OpenCv display
 //#define OPENCV

@@ -129,7 +129,8 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 	if(path.empty())
 	{
 		//TODO switch coke and sprite -> two trash cans
-		path = pathPlanner.getWayPoints(std::pair<int, int>((int)((pMCLp.GetXPos()+mapSize[0]/2)*100), (int)((pMCLp.GetYPos()+mapSize[1]/2)*100)), std::pair<int, int>(60, 60));
+		//!\\ X and Y are inverted for path planner
+		path = pathPlanner.getWayPoints(std::pair<int, int>((int)((pMCLp.GetYPos()+mapSize[1]/2)*100), (int)((pMCLp.GetXPos()+mapSize[0]/2)*100)), std::pair<int, int>(75, 75));
 		if(path.empty())
 		{
 			if(VERBOSITY & 1)printf("No path found, going down!\n");
@@ -137,15 +138,15 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 		}
 	}
 	std::pair<int, int> wayPoint = path[0];
-	while( std::pow(((float)wayPoint.first/100-(pMCLp.GetXPos()+(float)mapSize[0]/2)),2) + std::pow(((float)wayPoint.second/100-(pMCLp.GetYPos()+(float)mapSize[1]/2)),2) < 0.05)
+	while( std::pow(((float)wayPoint.second/100-(pMCLp.GetXPos()+(float)mapSize[0]/2)),2) + std::pow(((float)wayPoint.first/100-(pMCLp.GetYPos()+(float)mapSize[1]/2)),2) < 0.05)
 	//TODO eval the 0.5 influence and correct value
 	{
 	//if close enough to waypoint
 	//	suppress waypoint
-		if(VERBOSITY & 4)printf("Reached waypoint: 	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
+		if(VERBOSITY & 4)printf("Reached waypoint: 	[%f	%f].\n",(float)wayPoint.second/100, (float)wayPoint.first/100);
 		path.erase(path.begin());
 		wayPoint = path[0];
-		if(VERBOSITY & 4)printf("Going to waypoint:	[%f	%f].\n",(float)wayPoint.first/100, (float)wayPoint.second/100);
+		if(VERBOSITY & 4)printf("Going to waypoint:	[%f	%f].\n",(float)wayPoint.second/100, (float)wayPoint.first/100);
 		if(path.empty())
 		{
 			mode = 4;
@@ -156,10 +157,11 @@ Vect followPath(LaserProxy &lp, Position2dProxy &pMCLp, PathPlanner &pathPlanner
 	//goto next way point
 	Vect result;
 	result.rho = 1.0;
-	double dx = (float)wayPoint.first/100 - pMCLp.GetXPos()-(float)mapSize[0]/2;
-	double dy = (float)wayPoint.second/100 - pMCLp.GetYPos()-(float)mapSize[1]/2;
+	double dx = (float)wayPoint.second/100 - pMCLp.GetXPos()-(float)mapSize[0]/2;
+	double dy = (float)wayPoint.first/100 - pMCLp.GetYPos()-(float)mapSize[1]/2;
 	result.theta = 2*atan(dy/(dx+sqrt(pow(dx,2)+pow(dy,2)))) - pMCLp.GetYaw();
 	result.rho = cos(result.theta) > 0 ? result.rho * cos(result.theta) : 0;
+	result.norm();
 	result.rho /= 4;
 	result.theta /= 2;
 	if(VERBOSITY & 4)printf("At	[%lf	%lf] going to [%f	%f]\n",pMCLp.GetXPos()+(float)mapSize[0]/2, pMCLp.GetYPos()+(float)mapSize[1]/2, (float)wayPoint.first/100, (float)wayPoint.second/100);
@@ -334,10 +336,11 @@ Vect putDownCan(PlayerClient &robot, ActArrayProxy &aa, Position2dProxy &pMCLp, 
 	sleep(2);
 
 	//turn around
-	double ang = pMCLp.GetYaw();
-	while (pMCLp.GetYaw() > ang-PI + 0.1 && pMCLp.GetYaw() < ang + PI - 0.1)
+	double ang = pMCLp.GetYaw() + PI;
+	
+	while (!( (pMCLp.GetYaw() - ang > PI - 0.1 && pMCLp.GetYaw() - ang < - 3 * PI + 0.1)||(pMCLp.GetYaw() - ang > - 0.1 && pMCLp.GetYaw() - ang < + 0.1) ) )
 	{
-		printf("%lf	%lf	%lf	%lf\n",pMCLp.GetYaw() , ang-PI , pMCLp.GetYaw() , ang + PI);
+		//printf("%lf	%lf	%lf\n",pMCLp.GetYaw() - ang , -2 * PI , PI - 0.1);
 		robot.Read();
 		pp.SetSpeed(0, -0.5);
 		sleep(0.01);
