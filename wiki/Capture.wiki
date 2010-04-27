@@ -1,0 +1,3 @@
+#summary Screen captures
+
+http://tidybot.googlecode.com/svn/wiki/images/two_cans_trashed.png
