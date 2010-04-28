@@ -119,6 +119,8 @@ Vect searchCan(LaserProxy &lp, CameraProxy &cp, Position2dProxy &pMCLp)
 	if(VERBOSITY & 8)printf("---------------------------------------------------\n");
 	
 	Vect newControl = move(vectCombine(avoidObstacles(lp), wander(pMCLp), goToBeacon(position)), pMCLp);
+	
+	delete imgBuffer;
 
 	return Vect(newControl.rho/3, newControl.theta/2);
 }
